@@ -67,12 +67,23 @@ export interface Favorite {
   created_at: string;
 }
 
+export interface Feedback {
+  id: string;
+  user_id: string | null;
+  type: 'bug' | 'feature' | 'general';
+  message: string;
+  email: string | null;
+  language: string;
+  created_at: string;
+}
+
 export type RootStackParamList = {
   Auth: undefined;
   Main: undefined;
   DoctorProfile: { doctorId: string };
   WriteReview: { doctorId: string };
   DoctorRegistration: undefined;
+  Feedback: undefined;
 };
 
 export type MainTabParamList = {

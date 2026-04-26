@@ -7,8 +7,8 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   Linking,
-  Alert,
   Image,
+  Platform,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useRoute, useNavigation, RouteProp } from '@react-navigation/native';
@@ -270,6 +270,21 @@ export default function DoctorProfileScreen() {
         </View>
       ) : null}
 
+      {/* Map */}
+      {doctor.latitude && doctor.longitude && Platform.OS === 'web' && (
+        <View style={styles.section}>
+          <Text style={[styles.sectionTitle, isRTL && styles.rtlText]}>
+            {t('doctor.directions')}
+          </Text>
+          <View style={styles.mapContainer}>
+            <iframe
+              src={`https://www.openstreetmap.org/export/embed.html?bbox=${doctor.longitude - 0.01},${doctor.latitude - 0.005},${doctor.longitude + 0.01},${doctor.latitude + 0.005}&layer=mapnik&marker=${doctor.latitude},${doctor.longitude}`}
+              style={{ border: 0, width: '100%', height: '100%', borderRadius: 12 } as any}
+            />
+          </View>
+        </View>
+      )}
+
       {/* Reviews */}
       <View style={styles.section}>
         <View style={[styles.reviewHeader, isRTL && styles.rowRTL]}>
@@ -477,6 +492,11 @@ const styles = StyleSheet.create({
     fontSize: fontSize.md,
     color: colors.textSecondary,
     lineHeight: 24,
+  },
+  mapContainer: {
+    height: 200,
+    borderRadius: borderRadius.md,
+    overflow: 'hidden',
   },
   rtlText: {
     textAlign: 'right',

@@ -5,7 +5,6 @@ import {
   StyleSheet,
   TouchableOpacity,
   ScrollView,
-  Alert,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
@@ -14,6 +13,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { supabase } from '../lib/supabase';
 import { RootStackParamList, Profile } from '../types';
 import { colors, spacing, borderRadius, fontSize, fontWeight } from '../lib/theme';
+import { useToast } from '../components/Toast';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
@@ -26,6 +26,7 @@ const LANGUAGES = [
 export default function SettingsScreen() {
   const { t, i18n } = useTranslation();
   const navigation = useNavigation<NavigationProp>();
+  const { showToast } = useToast();
   const isRTL = i18n.language === 'ar';
 
   const [profile, setProfile] = useState<Profile | null>(null);
@@ -51,21 +52,8 @@ export default function SettingsScreen() {
     i18n.changeLanguage(langCode);
   };
 
-  const handleLogout = () => {
-    Alert.alert(
-      t('auth.logout'),
-      '',
-      [
-        { text: t('common.cancel'), style: 'cancel' },
-        {
-          text: t('auth.logout'),
-          style: 'destructive',
-          onPress: async () => {
-            await supabase.auth.signOut();
-          },
-        },
-      ]
-    );
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
   };
 
   return (
@@ -131,6 +119,20 @@ export default function SettingsScreen() {
         </TouchableOpacity>
       </View>
 
+      {/* Feedback */}
+      <View style={styles.section}>
+        <TouchableOpacity
+          style={[styles.optionRow, isRTL && styles.rowRTL]}
+          onPress={() => navigation.navigate('Feedback' as any)}
+        >
+          <Ionicons name="chatbubble-ellipses-outline" size={22} color={colors.primary} />
+          <Text style={[styles.optionText, isRTL && styles.rtlText, { flex: 1, marginHorizontal: spacing.md }]}>
+            {t('settings.feedback')}
+          </Text>
+          <Ionicons name={isRTL ? 'chevron-back' : 'chevron-forward'} size={20} color={colors.textLight} />
+        </TouchableOpacity>
+      </View>
+
       {/* About */}
       <View style={styles.section}>
         <View style={[styles.optionRow, isRTL && styles.rowRTL]}>
@@ -138,7 +140,7 @@ export default function SettingsScreen() {
           <Text style={[styles.optionText, isRTL && styles.rtlText, { flex: 1, marginHorizontal: spacing.md }]}>
             {t('settings.version')}
           </Text>
-          <Text style={styles.versionText}>1.0.0</Text>
+          <Text style={styles.versionText}>1.1.0</Text>
         </View>
       </View>
 

@@ -23,6 +23,9 @@ export default {
     loginError: 'Ошибка входа',
     signupError: 'Ошибка регистрации',
     invalidCredentials: 'Неверный email или пароль',
+    checkEmail: 'Проверьте вашу почту',
+    checkEmailMessage: 'Мы отправили ссылку для подтверждения на вашу почту. Пожалуйста, подтвердите аккаунт.',
+    signupSuccess: 'Аккаунт создан!',
   },
   home: {
     title: 'Арабские врачи в России',
@@ -88,6 +91,8 @@ export default {
     about: 'О приложении',
     version: 'Версия',
     registerAsDoctor: 'Зарегистрироваться как врач',
+    feedback: 'Отправить отзыв',
+    notifications: 'Уведомления',
   },
   doctorRegistration: {
     title: 'Регистрация врача',
@@ -105,6 +110,24 @@ export default {
     commentPlaceholder: 'Напишите ваш отзыв...',
     submit: 'Отправить отзыв',
     success: 'Ваш отзыв успешно отправлен!',
+  },
+  feedback: {
+    title: 'Отправить отзыв',
+    subtitle: 'Помогите нам улучшить ArabMed Russia! Ваш отзыв важен.',
+    typeLabel: 'Тип отзыва',
+    types: {
+      bug: 'Ошибка',
+      feature: 'Предложение',
+      general: 'Общий',
+    },
+    messageLabel: 'Ваше сообщение',
+    messagePlaceholder: 'Опишите ваш отзыв подробно...',
+    emailLabel: 'Email (необязательно)',
+    emailPlaceholder: 'your@email.com — для обратной связи',
+    submit: 'Отправить',
+    emptyMessage: 'Пожалуйста, введите сообщение',
+    successTitle: 'Спасибо!',
+    successMessage: 'Ваш отзыв получен. Мы ценим вашу помощь!',
   },
   languages: {
     ar: 'Арабский',

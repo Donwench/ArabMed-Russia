@@ -23,6 +23,9 @@ export default {
     loginError: 'خطأ في تسجيل الدخول',
     signupError: 'خطأ في إنشاء الحساب',
     invalidCredentials: 'البريد الإلكتروني أو كلمة المرور غير صحيحة',
+    checkEmail: 'تحقق من بريدك الإلكتروني',
+    checkEmailMessage: 'أرسلنا رابط تأكيد إلى بريدك الإلكتروني. يرجى تأكيد حسابك.',
+    signupSuccess: 'تم إنشاء الحساب!',
   },
   home: {
     title: 'أطباء عرب في روسيا',
@@ -88,6 +91,8 @@ export default {
     about: 'عن التطبيق',
     version: 'الإصدار',
     registerAsDoctor: 'سجّل كطبيب',
+    feedback: 'إرسال ملاحظات',
+    notifications: 'الإشعارات',
   },
   doctorRegistration: {
     title: 'تسجيل كطبيب',
@@ -105,6 +110,24 @@ export default {
     commentPlaceholder: 'اكتب تقييمك هنا...',
     submit: 'إرسال التقييم',
     success: 'تم إرسال تقييمك بنجاح!',
+  },
+  feedback: {
+    title: 'إرسال ملاحظات',
+    subtitle: 'ساعدنا في تحسين أطباء عرب في روسيا! رأيك يهمنا.',
+    typeLabel: 'نوع الملاحظة',
+    types: {
+      bug: 'خطأ تقني',
+      feature: 'طلب ميزة',
+      general: 'عام',
+    },
+    messageLabel: 'رسالتك',
+    messagePlaceholder: 'صف ملاحظاتك بالتفصيل...',
+    emailLabel: 'البريد الإلكتروني (اختياري)',
+    emailPlaceholder: 'your@email.com — للمتابعة',
+    submit: 'إرسال',
+    emptyMessage: 'يرجى إدخال رسالة',
+    successTitle: 'شكراً لك!',
+    successMessage: 'تم استلام ملاحظاتك. نقدّر مساعدتك!',
   },
   languages: {
     ar: 'العربية',

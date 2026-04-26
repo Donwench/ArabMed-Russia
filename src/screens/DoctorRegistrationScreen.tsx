@@ -6,7 +6,6 @@ import {
   TextInput,
   TouchableOpacity,
   ScrollView,
-  Alert,
   ActivityIndicator,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
@@ -15,6 +14,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { supabase } from '../lib/supabase';
 import { Specialty } from '../types';
 import { colors, spacing, borderRadius, fontSize, fontWeight } from '../lib/theme';
+import { useToast } from '../components/Toast';
 
 const LANGUAGE_OPTIONS = [
   { code: 'ar', labelKey: 'languages.ar' },
@@ -27,6 +27,7 @@ const LANGUAGE_OPTIONS = [
 export default function DoctorRegistrationScreen() {
   const { t, i18n } = useTranslation();
   const navigation = useNavigation();
+  const { showToast } = useToast();
   const isRTL = i18n.language === 'ar';
 
   const [specialties, setSpecialties] = useState<Specialty[]>([]);
@@ -62,7 +63,7 @@ export default function DoctorRegistrationScreen() {
 
   const handleSubmit = async () => {
     if (!selectedSpecialty || !clinicName || !clinicAddress || !phone) {
-      Alert.alert(t('common.error'), 'Please fill all required fields');
+      showToast(t('common.error'), 'Please fill all required fields', 'error');
       return;
     }
 
@@ -92,11 +93,10 @@ export default function DoctorRegistrationScreen() {
 
       if (error) throw error;
 
-      Alert.alert(t('doctorRegistration.success'), '', [
-        { text: 'OK', onPress: () => navigation.goBack() },
-      ]);
+      showToast(t('doctorRegistration.success'), undefined, 'success');
+      setTimeout(() => navigation.goBack(), 1500);
     } catch (error: any) {
-      Alert.alert(t('common.error'), error.message);
+      showToast(t('common.error'), error.message, 'error');
     } finally {
       setLoading(false);
     }

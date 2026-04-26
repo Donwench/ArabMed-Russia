@@ -5,7 +5,6 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
-  Alert,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -15,6 +14,7 @@ import { useTranslation } from 'react-i18next';
 import { supabase } from '../lib/supabase';
 import { colors, spacing, borderRadius, fontSize, fontWeight } from '../lib/theme';
 import { Ionicons } from '@expo/vector-icons';
+import { useToast } from '../components/Toast';
 
 export default function AuthScreen() {
   const { t, i18n } = useTranslation();
@@ -23,11 +23,12 @@ export default function AuthScreen() {
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
   const [loading, setLoading] = useState(false);
+  const { showToast } = useToast();
   const isRTL = i18n.language === 'ar';
 
   const handleAuth = async () => {
     if (!email || !password) {
-      Alert.alert(t('common.error'), t('auth.invalidCredentials'));
+      showToast(t('common.error'), t('auth.invalidCredentials'), 'error');
       return;
     }
 
@@ -37,7 +38,7 @@ export default function AuthScreen() {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
       } else {
-        const { error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
           email,
           password,
           options: {
@@ -48,11 +49,15 @@ export default function AuthScreen() {
           },
         });
         if (error) throw error;
+        if (data.user && !data.session) {
+          showToast(t('auth.signupSuccess'), t('auth.checkEmailMessage'), 'success');
+        }
       }
     } catch (error: any) {
-      Alert.alert(
+      showToast(
         isLogin ? t('auth.loginError') : t('auth.signupError'),
-        error.message
+        error.message,
+        'error'
       );
     } finally {
       setLoading(false);

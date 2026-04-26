@@ -80,6 +80,17 @@ CREATE TABLE IF NOT EXISTS favorites (
   UNIQUE(patient_id, doctor_id)
 );
 
+-- Feedback
+CREATE TABLE IF NOT EXISTS feedback (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id UUID REFERENCES profiles(id) ON DELETE SET NULL,
+  type TEXT NOT NULL DEFAULT 'general' CHECK (type IN ('bug', 'feature', 'general')),
+  message TEXT NOT NULL,
+  email TEXT,
+  language TEXT NOT NULL DEFAULT 'en',
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
 -- ============================================
 -- INDEXES
 -- ============================================
@@ -126,6 +137,11 @@ CREATE POLICY "Users can remove favorites" ON favorites FOR DELETE USING (auth.u
 -- Specialties & Cities: public read
 CREATE POLICY "Specialties are viewable by everyone" ON specialties FOR SELECT USING (true);
 CREATE POLICY "Cities are viewable by everyone" ON cities FOR SELECT USING (true);
+
+-- Feedback: anyone can create, only admin can read
+ALTER TABLE feedback ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Anyone can submit feedback" ON feedback FOR INSERT WITH CHECK (true);
+CREATE POLICY "Users can view own feedback" ON feedback FOR SELECT USING (auth.uid() = user_id);
 
 -- ============================================
 -- FUNCTION: Auto-create profile on signup
