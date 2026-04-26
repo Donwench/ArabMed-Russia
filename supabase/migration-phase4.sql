@@ -51,7 +51,7 @@ CREATE INDEX IF NOT EXISTS idx_suggestions_status ON doctor_suggestions(status);
 
 -- 6. RLS for doctor_suggestions
 ALTER TABLE doctor_suggestions ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Anyone can submit suggestions" ON doctor_suggestions FOR INSERT WITH CHECK (true);
+CREATE POLICY "Anyone can submit suggestions" ON doctor_suggestions FOR INSERT WITH CHECK (auth.uid() = submitted_by OR submitted_by IS NULL);
 CREATE POLICY "Users can view own suggestions" ON doctor_suggestions FOR SELECT USING (auth.uid() = submitted_by);
 CREATE POLICY "Admins can view all suggestions" ON doctor_suggestions FOR SELECT USING (
   EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin')

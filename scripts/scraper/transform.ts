@@ -151,7 +151,7 @@ function escapeSQL(str: string): string {
 }
 
 function formatLanguagesArray(langs: string[]): string {
-  return `ARRAY[${langs.map(l => `'${l}'`).join(',')}]::TEXT[]`;
+  return `ARRAY[${langs.map(l => `'${escapeSQL(l)}'`).join(',')}]::TEXT[]`;
 }
 
 function generateSQL(doctors: ScrapedDoctor[]): string {

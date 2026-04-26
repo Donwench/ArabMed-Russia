@@ -162,22 +162,23 @@ async function scrapeDoctorProfile(url: string, cityKey: string, cityInfo: typeo
     if (text === 'Языки общения' || text === 'Languages') {
       // Get the next sibling or parent's next content
       const langSection = $(el).parent().text().toLowerCase();
-      if (langSection.includes('арабский') || langSection.includes('arabic')) {
+      if ((langSection.includes('арабский') || langSection.includes('arabic')) && !languages.includes('ar')) {
         isArabicSpeaking = true;
         languages.push('ar');
       }
-      if (langSection.includes('русский') || langSection.includes('russian')) {
+      if ((langSection.includes('русский') || langSection.includes('russian')) && !languages.includes('ru')) {
         languages.push('ru');
       }
-      if (langSection.includes('английский') || langSection.includes('english')) {
+      if ((langSection.includes('английский') || langSection.includes('english')) && !languages.includes('en')) {
         languages.push('en');
       }
-      if (langSection.includes('французский') || langSection.includes('french')) {
+      if ((langSection.includes('французский') || langSection.includes('french')) && !languages.includes('fr')) {
         languages.push('fr');
       }
-      if (langSection.includes('турецкий') || langSection.includes('turkish')) {
+      if ((langSection.includes('турецкий') || langSection.includes('turkish')) && !languages.includes('tr')) {
         languages.push('tr');
       }
+      return false; // Stop after first match to avoid duplicate DOM nesting
     }
   });
   
