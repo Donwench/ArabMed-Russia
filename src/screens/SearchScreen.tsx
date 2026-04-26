@@ -87,10 +87,15 @@ export default function SearchScreen() {
       if (selectedCity) {
         const city = cities.find((c) => c.id === selectedCity);
         if (city) {
-          const cityName = getCityName(city).toLowerCase();
-          results = results.filter((d: any) =>
-            d.clinic_address?.toLowerCase().includes(cityName)
-          );
+          const cityNames = [
+            city.name_en.toLowerCase(),
+            city.name_ru.toLowerCase(),
+            city.name_ar.toLowerCase(),
+          ];
+          results = results.filter((d: any) => {
+            const addr = d.clinic_address?.toLowerCase() || '';
+            return cityNames.some((name) => addr.includes(name));
+          });
         }
       }
 

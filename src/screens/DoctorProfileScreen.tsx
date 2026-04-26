@@ -230,6 +230,20 @@ export default function DoctorProfileScreen() {
         </TouchableOpacity>
       </View>
 
+      {/* Request Appointment */}
+      <TouchableOpacity
+        style={styles.appointmentButton}
+        onPress={() => navigation.navigate('AppointmentRequest', {
+          doctorId,
+          doctorName: doctor.profile?.full_name || '',
+        })}
+      >
+        <Ionicons name="calendar-outline" size={20} color={colors.white} />
+        <Text style={styles.appointmentButtonText}>
+          {t('appointment.requestAppointment')}
+        </Text>
+      </TouchableOpacity>
+
       {/* Details */}
       <View style={styles.section}>
         <InfoRow
@@ -476,6 +490,22 @@ const styles = StyleSheet.create({
     fontSize: fontSize.xs,
     color: colors.primary,
     fontWeight: fontWeight.medium,
+  },
+  appointmentButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.primary,
+    marginHorizontal: spacing.md,
+    marginTop: spacing.sm,
+    padding: spacing.md,
+    borderRadius: borderRadius.md,
+    gap: spacing.sm,
+  },
+  appointmentButtonText: {
+    color: colors.white,
+    fontSize: fontSize.md,
+    fontWeight: fontWeight.semibold,
   },
   section: {
     backgroundColor: colors.white,

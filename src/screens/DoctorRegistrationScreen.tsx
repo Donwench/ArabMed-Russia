@@ -63,7 +63,7 @@ export default function DoctorRegistrationScreen() {
 
   const handleSubmit = async () => {
     if (!selectedSpecialty || !clinicName || !clinicAddress || !phone) {
-      showToast(t('common.error'), 'Please fill all required fields', 'error');
+      showToast(t('common.error'), t('common.fillRequired'), 'error');
       return;
     }
 
