@@ -19,6 +19,7 @@ import SettingsScreen from '../screens/SettingsScreen';
 import DoctorProfileScreen from '../screens/DoctorProfileScreen';
 import WriteReviewScreen from '../screens/WriteReviewScreen';
 import DoctorRegistrationScreen from '../screens/DoctorRegistrationScreen';
+import FeedbackScreen from '../screens/FeedbackScreen';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 const Tab = createBottomTabNavigator<MainTabParamList>();
@@ -134,6 +135,11 @@ export default function AppNavigator() {
               name="DoctorRegistration"
               component={DoctorRegistrationScreen}
               options={{ headerShown: true, headerTitle: '', headerBackTitle: '' }}
+            />
+            <Stack.Screen
+              name="Feedback"
+              component={FeedbackScreen}
+              options={{ headerShown: false }}
             />
           </>
         ) : (

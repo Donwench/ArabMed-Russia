@@ -1,30 +1,59 @@
 {
   "expo": {
-    "name": "arabdoc-russia",
-    "slug": "arabdoc-russia",
-    "version": "1.0.0",
+    "name": "ArabMed Russia",
+    "slug": "arabmed-russia",
+    "version": "1.1.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
+    "scheme": "arabmed",
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#0D9488"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.arabmed.russia",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "We need your location to find nearby doctors.",
+        "CFBundleLocalizations": ["ar", "ru", "en"],
+        "CFBundleDevelopmentRegion": "ar"
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#0D9488"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.arabmed.russia",
+      "permissions": ["ACCESS_FINE_LOCATION", "ACCESS_COARSE_LOCATION"]
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/favicon.png",
+      "name": "ArabMed Russia",
+      "shortName": "ArabMed",
+      "description": "Find Arabic-speaking doctors in Russia",
+      "lang": "ar",
+      "themeColor": "#0D9488",
+      "backgroundColor": "#0D9488"
+    },
+    "locales": {
+      "ar": "./src/i18n/ar.ts",
+      "ru": "./src/i18n/ru.ts",
+      "en": "./src/i18n/en.ts"
+    },
+    "plugins": [
+      "expo-localization",
+      "expo-secure-store"
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "arabmed-russia"
+      }
     }
   }
 }

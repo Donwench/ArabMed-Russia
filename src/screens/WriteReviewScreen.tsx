@@ -5,7 +5,6 @@ import {
   StyleSheet,
   TextInput,
   TouchableOpacity,
-  Alert,
   ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
@@ -16,6 +15,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { supabase } from '../lib/supabase';
 import { RootStackParamList } from '../types';
 import { colors, spacing, borderRadius, fontSize, fontWeight } from '../lib/theme';
+import { useToast } from '../components/Toast';
 
 type RouteParams = RouteProp<RootStackParamList, 'WriteReview'>;
 
@@ -23,6 +23,7 @@ export default function WriteReviewScreen() {
   const { t, i18n } = useTranslation();
   const route = useRoute<RouteParams>();
   const navigation = useNavigation();
+  const { showToast } = useToast();
   const isRTL = i18n.language === 'ar';
   const { doctorId } = route.params;
 
@@ -32,7 +33,7 @@ export default function WriteReviewScreen() {
 
   const handleSubmit = async () => {
     if (rating === 0) {
-      Alert.alert(t('common.error'), t('review.ratingLabel'));
+      showToast(t('common.error'), t('review.ratingLabel'), 'error');
       return;
     }
 
@@ -51,11 +52,10 @@ export default function WriteReviewScreen() {
 
       if (error) throw error;
 
-      Alert.alert(t('review.success'), '', [
-        { text: 'OK', onPress: () => navigation.goBack() },
-      ]);
+      showToast(t('review.success'), undefined, 'success');
+      setTimeout(() => navigation.goBack(), 1500);
     } catch (error: any) {
-      Alert.alert(t('common.error'), error.message);
+      showToast(t('common.error'), error.message, 'error');
     } finally {
       setLoading(false);
     }

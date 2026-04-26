@@ -23,6 +23,9 @@ export default {
     loginError: 'Login Error',
     signupError: 'Signup Error',
     invalidCredentials: 'Invalid email or password',
+    checkEmail: 'Check your email',
+    checkEmailMessage: 'We sent a confirmation link to your email. Please verify your account.',
+    signupSuccess: 'Account created!',
   },
   home: {
     title: 'Arabic Doctors in Russia',
@@ -88,6 +91,8 @@ export default {
     about: 'About',
     version: 'Version',
     registerAsDoctor: 'Register as a Doctor',
+    feedback: 'Send Feedback',
+    notifications: 'Notifications',
   },
   doctorRegistration: {
     title: 'Doctor Registration',
@@ -105,6 +110,24 @@ export default {
     commentPlaceholder: 'Write your review here...',
     submit: 'Submit Review',
     success: 'Your review has been submitted successfully!',
+  },
+  feedback: {
+    title: 'Send Feedback',
+    subtitle: 'Help us improve ArabMed Russia! Your feedback matters.',
+    typeLabel: 'Feedback Type',
+    types: {
+      bug: 'Bug Report',
+      feature: 'Feature Request',
+      general: 'General',
+    },
+    messageLabel: 'Your Message',
+    messagePlaceholder: 'Describe your feedback in detail...',
+    emailLabel: 'Email (optional)',
+    emailPlaceholder: 'your@email.com — for follow-up',
+    submit: 'Send Feedback',
+    emptyMessage: 'Please enter a message',
+    successTitle: 'Thank you!',
+    successMessage: 'Your feedback has been received. We appreciate your help!',
   },
   languages: {
     ar: 'Arabic',
