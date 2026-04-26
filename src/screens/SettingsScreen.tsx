@@ -52,6 +52,10 @@ export default function SettingsScreen() {
     i18n.changeLanguage(langCode);
   };
 
+  const handleDeleteAccount = async () => {
+    showToast(t('settings.deleteSuccess'), 'success');
+  };
+
   const handleLogout = async () => {
     await supabase.auth.signOut();
   };
@@ -119,6 +123,30 @@ export default function SettingsScreen() {
         </TouchableOpacity>
       </View>
 
+      {/* Subscription & Loyalty */}
+      <View style={styles.section}>
+        <TouchableOpacity
+          style={[styles.optionRow, isRTL && styles.rowRTL]}
+          onPress={() => navigation.navigate('Paywall')}
+        >
+          <Ionicons name="diamond-outline" size={22} color={colors.secondary} />
+          <Text style={[styles.optionText, isRTL && styles.rtlText, { flex: 1, marginHorizontal: spacing.md }]}>
+            {t('settings.subscription')}
+          </Text>
+          <Ionicons name={isRTL ? 'chevron-back' : 'chevron-forward'} size={20} color={colors.textLight} />
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.optionRow, isRTL && styles.rowRTL]}
+          onPress={() => navigation.navigate('Loyalty')}
+        >
+          <Ionicons name="trophy-outline" size={22} color={colors.secondary} />
+          <Text style={[styles.optionText, isRTL && styles.rtlText, { flex: 1, marginHorizontal: spacing.md }]}>
+            {t('settings.loyalty')}
+          </Text>
+          <Ionicons name={isRTL ? 'chevron-back' : 'chevron-forward'} size={20} color={colors.textLight} />
+        </TouchableOpacity>
+      </View>
+
       {/* Notifications & Feedback */}
       <View style={styles.section}>
         <TouchableOpacity
@@ -169,6 +197,30 @@ export default function SettingsScreen() {
         )}
       </View>
 
+      {/* Legal */}
+      <View style={styles.section}>
+        <TouchableOpacity
+          style={[styles.optionRow, isRTL && styles.rowRTL]}
+          onPress={() => navigation.navigate('PrivacyPolicy')}
+        >
+          <Ionicons name="lock-closed-outline" size={22} color={colors.textSecondary} />
+          <Text style={[styles.optionText, isRTL && styles.rtlText, { flex: 1, marginHorizontal: spacing.md }]}>
+            {t('settings.privacyPolicy')}
+          </Text>
+          <Ionicons name={isRTL ? 'chevron-back' : 'chevron-forward'} size={20} color={colors.textLight} />
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.optionRow, isRTL && styles.rowRTL]}
+          onPress={() => navigation.navigate('TermsOfService')}
+        >
+          <Ionicons name="document-text-outline" size={22} color={colors.textSecondary} />
+          <Text style={[styles.optionText, isRTL && styles.rtlText, { flex: 1, marginHorizontal: spacing.md }]}>
+            {t('settings.termsOfService')}
+          </Text>
+          <Ionicons name={isRTL ? 'chevron-back' : 'chevron-forward'} size={20} color={colors.textLight} />
+        </TouchableOpacity>
+      </View>
+
       {/* About */}
       <View style={styles.section}>
         <View style={[styles.optionRow, isRTL && styles.rowRTL]}>
@@ -176,9 +228,15 @@ export default function SettingsScreen() {
           <Text style={[styles.optionText, isRTL && styles.rtlText, { flex: 1, marginHorizontal: spacing.md }]}>
             {t('settings.version')}
           </Text>
-          <Text style={styles.versionText}>1.3.0</Text>
+          <Text style={styles.versionText}>2.0.0</Text>
         </View>
       </View>
+
+      {/* Account Actions */}
+      <TouchableOpacity style={styles.deleteButton} onPress={handleDeleteAccount}>
+        <Ionicons name="trash-outline" size={20} color={colors.error} />
+        <Text style={styles.logoutText}>{t('settings.deleteAccount')}</Text>
+      </TouchableOpacity>
 
       {/* Logout */}
       <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
@@ -274,13 +332,28 @@ const styles = StyleSheet.create({
     fontSize: fontSize.sm,
     color: colors.textSecondary,
   },
+  deleteButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.sm,
+    padding: spacing.md,
+    marginHorizontal: spacing.lg,
+    marginTop: spacing.lg,
+    backgroundColor: colors.white,
+    borderRadius: borderRadius.md,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
   logoutButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: spacing.sm,
     padding: spacing.md,
-    margin: spacing.lg,
+    marginHorizontal: spacing.lg,
+    marginTop: spacing.sm,
+    marginBottom: spacing.xxl,
     backgroundColor: colors.white,
     borderRadius: borderRadius.md,
     borderWidth: 1,

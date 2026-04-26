@@ -143,9 +143,48 @@ export interface DoctorSuggestion {
   created_at: string;
 }
 
+export interface Subscription {
+  id: string;
+  user_id: string;
+  tier: 'free' | 'premium' | 'doctor_pro';
+  is_active: boolean;
+  expires_at: string | null;
+  trial_ends_at: string | null;
+  platform: 'ios' | 'android' | 'web';
+  created_at: string;
+}
+
+export interface LoyaltyPoints {
+  id: string;
+  user_id: string;
+  action: string;
+  points: number;
+  description: string;
+  created_at: string;
+}
+
+export interface ReferralCode {
+  id: string;
+  user_id: string;
+  code: string;
+  used_count: number;
+  created_at: string;
+}
+
+export interface UserConsent {
+  id: string;
+  user_id: string;
+  privacy_accepted: boolean;
+  terms_accepted: boolean;
+  marketing_consent: boolean;
+  age_confirmed: boolean;
+  consent_date: string;
+}
+
 export type RootStackParamList = {
   Auth: undefined;
   Main: undefined;
+  Consent: undefined;
   DoctorProfile: { doctorId: string };
   WriteReview: { doctorId: string };
   DoctorRegistration: undefined;
@@ -155,6 +194,10 @@ export type RootStackParamList = {
   Notifications: undefined;
   SuggestDoctor: undefined;
   AdminPanel: undefined;
+  Paywall: undefined;
+  Loyalty: undefined;
+  PrivacyPolicy: undefined;
+  TermsOfService: undefined;
 };
 
 export type MainTabParamList = {

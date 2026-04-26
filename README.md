@@ -4,26 +4,56 @@ Arabic Doctors Directory in Russia - Find Arabic-speaking doctors near you.
 
 ## Features
 
-- **Doctor Directory** - Search and browse Arabic-speaking doctors across Russia
-- **Multi-language** - Arabic (RTL), Russian, and English
+### Core
+- **Doctor Directory** - Search and browse Arabic-speaking doctors across 15 Russian cities
+- **Multi-language** - Arabic (full RTL), Russian, and English
 - **Search & Filters** - Filter by city, specialty, and languages spoken
 - **Reviews & Ratings** - Rate and review doctors
 - **Favorites** - Save doctors for quick access
+- **Appointments** - Request callbacks from doctors
 - **Doctor Registration** - Doctors can register and manage their profiles
-- **In-app Toast Notifications** - Error/success feedback works on both web and native
-- **Feedback System** - Users can submit bug reports, feature requests, and general feedback
-- **Map Integration** - OpenStreetMap embedded maps for doctor clinic locations (web)
-- **Verification Badges** - Visual indicator for verified doctors
-- **App Store Ready** - Configured for iOS (App Store) and Android (Google Play) publishing
+- **Community Suggestions** - Users can suggest doctors to be added
+- **Admin Panel** - Manage doctor suggestions, view statistics
+
+### Subscriptions (Phase 5)
+- **3 Subscription Tiers** - Free, Premium ($3.99/mo), Doctor Pro ($9.99/mo)
+- **Paywall Screen** - Tier comparison with feature matrix
+- **7-Day Free Trial** - Premium trial for new users
+- **Feature Gating** - Free: 10 searches/day, 5 favorites; Premium: unlimited; Doctor Pro: analytics + featured listing
+- **Restore Purchases** - Cross-device purchase restoration
+
+### Loyalty Program (Phase 6)
+- **Points System** - Earn points for daily login (5), reviews (50), referrals (100), appointments (25)
+- **3 Tiers** - Bronze (0-499), Silver (500-1999), Gold (2000+)
+- **Referral Codes** - Share unique codes, earn 100 points per referral
+- **Rewards Dashboard** - Track points, tier progress, and history
+
+### Legal Compliance (Phase 7)
+- **152-FZ Compliant** - Russian Federal Law on Personal Data
+- **Privacy Policy** - Trilingual (AR/RU/EN), covers data collection, storage, user rights
+- **Terms of Service** - Trilingual, covers subscriptions, user content, liability
+- **Medical Disclaimer** - "Informational directory only, not medical advice"
+- **Consent Screen** - First-launch consent flow with privacy + terms + age verification
+- **Data Deletion** - Account deletion request flow in Settings
+- **Marketing Opt-In** - Optional, GDPR-style consent for promotional emails
+
+### Infrastructure
+- **Map Integration** - OpenStreetMap for doctor clinic locations
+- **Push Notifications** - Expo Push for appointment updates
+- **Web Scraper** - ProDoctorov.ru crawler for Arabic-speaking doctors
+- **EAS Build** - Development, preview, and production build profiles
+- **App Store Ready** - Configured for iOS and Android publishing
 
 ## Tech Stack
 
 - **Frontend:** React Native (Expo) with TypeScript
-- **Backend:** Supabase (PostgreSQL, Auth, Storage)
+- **Backend:** Supabase (PostgreSQL, Auth, Row Level Security)
 - **Navigation:** React Navigation (Stack + Bottom Tabs)
 - **i18n:** i18next + react-i18next
 - **Icons:** Expo Vector Icons (Ionicons)
 - **Maps:** OpenStreetMap (free, no API key)
+- **Payments:** RevenueCat (sandbox mode, wraps App Store + Google Play)
+- **Storage:** AsyncStorage (consent, preferences)
 
 ## Getting Started
 
@@ -45,7 +75,8 @@ Arabic Doctors Directory in Russia - Find Arabic-speaking doctors near you.
 2. **Set up Supabase:**
    - Create a free project at [supabase.com](https://supabase.com)
    - Run the SQL in `supabase/schema.sql` in the Supabase SQL Editor
-   - (Optional) Run `supabase/seed-doctors.sql` to populate sample doctors
+   - Run `supabase/migration-phase4.sql` for Phase 4 columns
+   - Run `supabase/migration-phases5-8.sql` for subscriptions, loyalty, and legal tables
    - Copy your project URL and anon key
 
 3. **Configure environment:**
@@ -61,41 +92,27 @@ Arabic Doctors Directory in Russia - Find Arabic-speaking doctors near you.
    ```
    For web: `npx expo start --web`
 
-## Project Structure
+## Database
 
-```
-arabdoc-russia/
-├── App.tsx                    # App entry point (with ToastProvider)
-├── src/
-│   ├── components/            # Reusable components
-│   │   ├── DoctorCard.tsx     # Doctor list card with verification badge
-│   │   └── Toast.tsx          # Cross-platform toast notifications
-│   ├── i18n/                  # Translations
-│   │   ├── ar.ts              # Arabic
-│   │   ├── ru.ts              # Russian
-│   │   ├── en.ts              # English
-│   │   └── index.ts           # i18n config
-│   ├── lib/                   # Shared utilities
-│   │   ├── supabase.ts        # Supabase client (platform-aware storage)
-│   │   └── theme.ts           # Colors, spacing, typography
-│   ├── navigation/
-│   │   └── AppNavigator.tsx   # Navigation setup (Stack + Tabs)
-│   ├── screens/
-│   │   ├── AuthScreen.tsx          # Login/Signup with toast feedback
-│   │   ├── HomeScreen.tsx          # Doctor listing + specialty filters
-│   │   ├── SearchScreen.tsx        # Advanced search (city/specialty/lang)
-│   │   ├── FavoritesScreen.tsx     # Saved doctors
-│   │   ├── SettingsScreen.tsx      # Language, feedback link, logout
-│   │   ├── DoctorProfileScreen.tsx # Details, map, reviews, favorites
-│   │   ├── WriteReviewScreen.tsx   # Star rating + comment
-│   │   ├── DoctorRegistrationScreen.tsx # Doctor self-registration
-│   │   └── FeedbackScreen.tsx      # In-app feedback form
-│   └── types/
-│       └── index.ts           # TypeScript types
-└── supabase/
-    ├── schema.sql             # Database schema + seed data
-    └── seed-doctors.sql       # Sample doctor data (10 doctors)
-```
+15 tables with Row Level Security:
+
+| Table | Purpose |
+|-------|---------|
+| profiles | User profiles (patient/doctor/admin) |
+| doctors | Doctor listings with 30+ fields |
+| specialties | 12 medical specialties (trilingual) |
+| cities | 15 Russian cities (with Arabic names) |
+| reviews | Patient reviews with ratings |
+| favorites | Saved doctors |
+| feedback | User feedback submissions |
+| appointment_requests | Doctor callback requests |
+| notifications | In-app notifications |
+| push_tokens | Device push notification tokens |
+| doctor_suggestions | Community-submitted doctor suggestions |
+| subscriptions | User subscription records |
+| loyalty_points | Points earned per action |
+| referral_codes | User referral codes |
+| user_consents | 152-FZ consent records |
 
 ## Supported Languages
 
@@ -105,35 +122,30 @@ arabdoc-russia/
 | Russian  | ru   | LTR       |
 | English  | en   | LTR       |
 
-## Database
-
-The database schema is defined in `supabase/schema.sql`. It includes:
-- **profiles** - User profiles (patients, doctors, admins)
-- **doctors** - Doctor listings with specialty, clinic, languages, coordinates
-- **specialties** - Medical specialties (12 seeded)
-- **cities** - Russian cities with Arabic names (8 seeded)
-- **reviews** - Patient reviews with ratings
-- **favorites** - Saved doctors
-- **feedback** - User feedback submissions
-
-Row Level Security (RLS) is enabled on all tables.
-
 ## App Store Publishing
-
-The app is configured for publishing via EAS Build:
-- **iOS:** Bundle ID `com.arabmed.russia` - requires Apple Developer Account ($99/year)
-- **Android:** Package `com.arabmed.russia` - requires Google Play Developer ($25 one-time)
 
 ```bash
 # Install EAS CLI
 npm install -g eas-cli
 
-# Build for iOS
-eas build --platform ios
+# Build for development
+eas build --profile development --platform all
 
-# Build for Android
-eas build --platform android
+# Build for preview (internal testing)
+eas build --profile preview --platform all
+
+# Build for production
+eas build --profile production --platform all
 ```
+
+- **iOS:** Bundle ID `com.arabmed.russia` — requires Apple Developer ($99/yr)
+- **Android:** Package `com.arabmed.russia` — requires Google Play Developer ($25 one-time)
+
+## Legal
+
+This app is an **informational directory only**. It does not provide medical advice, diagnosis, or treatment. Always consult a qualified healthcare professional.
+
+Compliant with Russian Federal Law No. 152-FZ "On Personal Data".
 
 ## License
 

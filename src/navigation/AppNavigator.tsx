@@ -25,6 +25,10 @@ import AppointmentsScreen from '../screens/AppointmentsScreen';
 import NotificationsScreen from '../screens/NotificationsScreen';
 import SuggestDoctorScreen from '../screens/SuggestDoctorScreen';
 import AdminPanelScreen from '../screens/AdminPanelScreen';
+import PaywallScreen from '../screens/PaywallScreen';
+import LoyaltyScreen from '../screens/LoyaltyScreen';
+import PrivacyPolicyScreen from '../screens/PrivacyPolicyScreen';
+import TermsOfServiceScreen from '../screens/TermsOfServiceScreen';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 const Tab = createBottomTabNavigator<MainTabParamList>();
@@ -174,6 +178,26 @@ export default function AppNavigator() {
             <Stack.Screen
               name="AdminPanel"
               component={AdminPanelScreen}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="Paywall"
+              component={PaywallScreen}
+              options={{ headerShown: false, presentation: 'modal' }}
+            />
+            <Stack.Screen
+              name="Loyalty"
+              component={LoyaltyScreen}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="PrivacyPolicy"
+              component={PrivacyPolicyScreen}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="TermsOfService"
+              component={TermsOfServiceScreen}
               options={{ headerShown: false }}
             />
           </>
