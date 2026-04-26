@@ -218,7 +218,7 @@ CREATE OR REPLACE FUNCTION prevent_role_escalation()
 RETURNS TRIGGER AS $$
 BEGIN
   IF NEW.role <> OLD.role THEN
-    IF NOT EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin') THEN
+    IF auth.uid() IS NOT NULL AND NOT EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin') THEN
       NEW.role := OLD.role;
     END IF;
   END IF;
