@@ -127,8 +127,8 @@ async function main() {
     
     // Try with just clinic name + city
     if (!coords && doc.clinic_name) {
-      coords = await geocodeAddress(doc.clinic_name, doc.city_name);
       await sleep(REQUEST_DELAY_MS);
+      coords = await geocodeAddress(doc.clinic_name, doc.city_name);
     }
     
     if (coords) {

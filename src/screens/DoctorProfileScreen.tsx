@@ -152,6 +152,8 @@ export default function DoctorProfileScreen() {
     ar: t('languages.ar'),
     ru: t('languages.ru'),
     en: t('languages.en'),
+    fr: t('languages.fr'),
+    tr: t('languages.tr'),
   };
 
   const avgRating = reviews.length > 0
