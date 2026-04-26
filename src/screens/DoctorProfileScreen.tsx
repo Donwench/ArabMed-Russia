@@ -302,7 +302,7 @@ export default function DoctorProfileScreen() {
       )}
 
       {/* Experience & External Rating */}
-      {(doctor.experience_years || doctor.external_rating) && (
+      {(doctor.experience_years != null || doctor.external_rating != null) && (
         <View style={styles.section}>
           {doctor.experience_years ? (
             <InfoRow
