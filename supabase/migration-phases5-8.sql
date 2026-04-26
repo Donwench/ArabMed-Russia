@@ -21,7 +21,7 @@ CREATE POLICY "Users can view own subscriptions" ON subscriptions
   FOR SELECT USING (auth.uid() = user_id);
 
 CREATE POLICY "Service role can manage subscriptions" ON subscriptions
-  FOR ALL USING (auth.uid() = user_id);
+  FOR ALL USING (auth.jwt() ->> 'role' = 'service_role');
 
 CREATE INDEX IF NOT EXISTS idx_subscriptions_user_id ON subscriptions(user_id);
 CREATE INDEX IF NOT EXISTS idx_subscriptions_active ON subscriptions(user_id, is_active) WHERE is_active = true;

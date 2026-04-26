@@ -5,6 +5,8 @@ import {
   StyleSheet,
   TouchableOpacity,
   ScrollView,
+  Alert,
+  Platform,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
@@ -52,8 +54,38 @@ export default function SettingsScreen() {
     i18n.changeLanguage(langCode);
   };
 
-  const handleDeleteAccount = async () => {
-    showToast(t('settings.deleteSuccess'), 'success');
+  const handleDeleteAccount = () => {
+    const doDelete = async () => {
+      const { data: userData } = await supabase.auth.getUser();
+      if (!userData.user) {
+        showToast(t('common.error'), 'error');
+        return;
+      }
+      const { error } = await supabase.from('data_deletion_requests').insert({
+        user_id: userData.user.id,
+        status: 'pending',
+      });
+      if (error) {
+        showToast(t('common.error'), 'error');
+        return;
+      }
+      showToast(t('settings.deleteSuccess'), 'success');
+    };
+
+    if (Platform.OS === 'web') {
+      if (window.confirm(t('settings.deleteConfirm'))) {
+        doDelete();
+      }
+    } else {
+      Alert.alert(
+        t('settings.deleteAccount'),
+        t('settings.deleteConfirm'),
+        [
+          { text: t('common.cancel'), style: 'cancel' },
+          { text: t('common.delete'), style: 'destructive', onPress: doDelete },
+        ],
+      );
+    }
   };
 
   const handleLogout = async () => {
