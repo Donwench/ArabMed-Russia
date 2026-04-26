@@ -123,9 +123,13 @@ export default function HomeScreen() {
     if (!searchQuery) return true;
     const q = searchQuery.toLowerCase();
     return (
+      doctor.full_name?.toLowerCase().includes(q) ||
+      doctor.full_name_ru?.toLowerCase().includes(q) ||
       doctor.profile?.full_name?.toLowerCase().includes(q) ||
       doctor.clinic_name?.toLowerCase().includes(q) ||
-      doctor.clinic_address?.toLowerCase().includes(q)
+      doctor.clinic_address?.toLowerCase().includes(q) ||
+      doctor.specialty_text?.toLowerCase().includes(q) ||
+      doctor.city_name?.toLowerCase().includes(q)
     );
   });
 

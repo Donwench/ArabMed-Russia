@@ -16,6 +16,8 @@ export default function DoctorCard({ doctor, onPress, specialtyName }: DoctorCar
   const isRTL = i18n.language === 'ar';
 
   const getLocalizedName = () => {
+    // Scraped doctors have full_name directly; manual doctors use profile
+    if (doctor.full_name) return doctor.full_name;
     return doctor.profile?.full_name || '';
   };
 
@@ -24,18 +26,36 @@ export default function DoctorCard({ doctor, onPress, specialtyName }: DoctorCar
     return (doctor[key] as string) || doctor.about_en || doctor.about_ar || '';
   };
 
+  const getPhotoUrl = () => {
+    return doctor.photo_url || doctor.profile?.avatar_url || null;
+  };
+
+  const getDisplayRating = () => {
+    if (doctor.avg_rating && doctor.avg_rating > 0) return doctor.avg_rating;
+    if (doctor.external_rating && doctor.external_rating > 0) return doctor.external_rating;
+    return 0;
+  };
+
+  const getDisplayReviewCount = () => {
+    if (doctor.review_count && doctor.review_count > 0) return doctor.review_count;
+    if (doctor.external_review_count && doctor.external_review_count > 0) return doctor.external_review_count;
+    return 0;
+  };
+
   const languageLabels: Record<string, string> = {
     ar: t('languages.ar'),
     ru: t('languages.ru'),
     en: t('languages.en'),
+    fr: t('languages.fr'),
+    tr: t('languages.tr'),
   };
 
   return (
     <TouchableOpacity style={[styles.card, shadows.md]} onPress={onPress} activeOpacity={0.7}>
       <View style={[styles.row, isRTL && styles.rowRTL]}>
         <View style={styles.avatarContainer}>
-          {doctor.profile?.avatar_url ? (
-            <Image source={{ uri: doctor.profile.avatar_url }} style={styles.avatar} />
+          {getPhotoUrl() ? (
+            <Image source={{ uri: getPhotoUrl()! }} style={styles.avatar} />
           ) : (
             <View style={styles.avatarPlaceholder}>
               <Ionicons name="person" size={28} color={colors.white} />
@@ -73,13 +93,16 @@ export default function DoctorCard({ doctor, onPress, specialtyName }: DoctorCar
             </Text>
           </View>
 
-          {(doctor.avg_rating !== undefined && doctor.avg_rating > 0) && (
+          {getDisplayRating() > 0 && (
             <View style={[styles.ratingRow, isRTL && styles.rowRTL]}>
               <Ionicons name="star" size={14} color={colors.star} />
-              <Text style={styles.ratingText}>{doctor.avg_rating.toFixed(1)}</Text>
+              <Text style={styles.ratingText}>{getDisplayRating().toFixed(1)}</Text>
               <Text style={styles.reviewCount}>
-                ({doctor.review_count || 0})
+                ({getDisplayReviewCount()})
               </Text>
+              {doctor.source && doctor.source !== 'manual' && (
+                <Text style={styles.sourceTag}>{doctor.source}</Text>
+              )}
             </View>
           )}
         </View>
@@ -177,6 +200,17 @@ const styles = StyleSheet.create({
   reviewCount: {
     fontSize: fontSize.xs,
     color: colors.textSecondary,
+  },
+  sourceTag: {
+    fontSize: 10,
+    color: colors.white,
+    backgroundColor: colors.primaryLight,
+    paddingHorizontal: 6,
+    paddingVertical: 1,
+    borderRadius: 4,
+    overflow: 'hidden',
+    marginLeft: 6,
+    textTransform: 'capitalize',
   },
   rtlText: {
     textAlign: 'right',

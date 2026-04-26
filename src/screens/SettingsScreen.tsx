@@ -143,6 +143,32 @@ export default function SettingsScreen() {
         </TouchableOpacity>
       </View>
 
+      {/* Suggest a Doctor & Admin */}
+      <View style={styles.section}>
+        <TouchableOpacity
+          style={[styles.optionRow, isRTL && styles.rowRTL]}
+          onPress={() => navigation.navigate('SuggestDoctor')}
+        >
+          <Ionicons name="person-add-outline" size={22} color={colors.primary} />
+          <Text style={[styles.optionText, isRTL && styles.rtlText, { flex: 1, marginHorizontal: spacing.md }]}>
+            {t('settings.suggestDoctor')}
+          </Text>
+          <Ionicons name={isRTL ? 'chevron-back' : 'chevron-forward'} size={20} color={colors.textLight} />
+        </TouchableOpacity>
+        {profile?.role === 'admin' && (
+          <TouchableOpacity
+            style={[styles.optionRow, isRTL && styles.rowRTL]}
+            onPress={() => navigation.navigate('AdminPanel')}
+          >
+            <Ionicons name="shield-outline" size={22} color={colors.primary} />
+            <Text style={[styles.optionText, isRTL && styles.rtlText, { flex: 1, marginHorizontal: spacing.md }]}>
+              {t('settings.adminPanel')}
+            </Text>
+            <Ionicons name={isRTL ? 'chevron-back' : 'chevron-forward'} size={20} color={colors.textLight} />
+          </TouchableOpacity>
+        )}
+      </View>
+
       {/* About */}
       <View style={styles.section}>
         <View style={[styles.optionRow, isRTL && styles.rowRTL]}>
@@ -150,7 +176,7 @@ export default function SettingsScreen() {
           <Text style={[styles.optionText, isRTL && styles.rtlText, { flex: 1, marginHorizontal: spacing.md }]}>
             {t('settings.version')}
           </Text>
-          <Text style={styles.versionText}>1.2.0</Text>
+          <Text style={styles.versionText}>1.3.0</Text>
         </View>
       </View>
 

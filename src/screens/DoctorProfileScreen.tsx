@@ -179,14 +179,14 @@ export default function DoctorProfileScreen() {
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.avatarLarge}>
-          {doctor.profile?.avatar_url ? (
-            <Image source={{ uri: doctor.profile.avatar_url }} style={styles.avatarImage} />
+          {(doctor.photo_url || doctor.profile?.avatar_url) ? (
+            <Image source={{ uri: (doctor.photo_url || doctor.profile?.avatar_url)! }} style={styles.avatarImage} />
           ) : (
             <Ionicons name="person" size={48} color={colors.white} />
           )}
         </View>
         <Text style={[styles.name, isRTL && styles.rtlText]}>
-          {doctor.profile?.full_name}
+          {doctor.full_name || doctor.profile?.full_name}
         </Text>
         <Text style={[styles.specialtyText, isRTL && styles.rtlText]}>
           {getSpecialtyName()}
@@ -235,7 +235,7 @@ export default function DoctorProfileScreen() {
         style={styles.appointmentButton}
         onPress={() => navigation.navigate('AppointmentRequest', {
           doctorId,
-          doctorName: doctor.profile?.full_name || '',
+          doctorName: doctor.full_name || doctor.profile?.full_name || '',
         })}
       >
         <Ionicons name="calendar-outline" size={20} color={colors.white} />
@@ -297,6 +297,41 @@ export default function DoctorProfileScreen() {
             />
           </View>
         </View>
+      )}
+
+      {/* Experience & External Rating */}
+      {(doctor.experience_years || doctor.external_rating) && (
+        <View style={styles.section}>
+          {doctor.experience_years ? (
+            <InfoRow
+              icon="time-outline"
+              label={t('doctor.experience')}
+              value={t('doctor.yearsExperience', { count: doctor.experience_years })}
+              isRTL={isRTL}
+            />
+          ) : null}
+          {doctor.external_rating ? (
+            <InfoRow
+              icon="star-outline"
+              label={t('doctor.externalRating')}
+              value={`${doctor.external_rating.toFixed(1)} (${doctor.external_review_count} ${t('doctor.reviews').toLowerCase()})`}
+              isRTL={isRTL}
+            />
+          ) : null}
+        </View>
+      )}
+
+      {/* Source Attribution */}
+      {doctor.source && doctor.source !== 'manual' && doctor.source_url && (
+        <TouchableOpacity
+          style={styles.sourceAttribution}
+          onPress={() => Linking.openURL(doctor.source_url!)}
+        >
+          <Ionicons name="open-outline" size={16} color={colors.primary} />
+          <Text style={styles.sourceText}>
+            {t('doctor.dataFrom')} {doctor.source === 'prodoctorov' ? 'ProDoctorov' : doctor.source}
+          </Text>
+        </TouchableOpacity>
       )}
 
       {/* Reviews */}
@@ -587,5 +622,22 @@ const styles = StyleSheet.create({
   reviewDate: {
     fontSize: fontSize.xs,
     color: colors.textLight,
+  },
+  sourceAttribution: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    marginHorizontal: spacing.md,
+    marginTop: spacing.sm,
+    padding: spacing.md,
+    backgroundColor: colors.white,
+    borderRadius: borderRadius.md,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  sourceText: {
+    fontSize: fontSize.sm,
+    color: colors.primary,
+    fontWeight: fontWeight.medium,
   },
 });
