@@ -202,11 +202,34 @@ CREATE POLICY "Doctors can update appointment status" ON appointment_requests FO
 ALTER TABLE notifications ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Users can view own notifications" ON notifications FOR SELECT USING (auth.uid() = user_id);
 CREATE POLICY "Users can update own notifications" ON notifications FOR UPDATE USING (auth.uid() = user_id);
-CREATE POLICY "System can create notifications" ON notifications FOR INSERT WITH CHECK (true);
+CREATE POLICY "Admins can create notifications" ON notifications FOR INSERT WITH CHECK (
+  auth.uid() IS NOT NULL AND EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin')
+);
 
 -- Push Tokens: users manage own
 ALTER TABLE push_tokens ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Users can manage own push tokens" ON push_tokens FOR ALL USING (auth.uid() = user_id);
+
+-- ============================================
+-- SECURITY: Prevent role escalation
+-- ============================================
+
+CREATE OR REPLACE FUNCTION prevent_role_escalation()
+RETURNS TRIGGER AS $$
+BEGIN
+  IF NEW.role <> OLD.role THEN
+    IF auth.uid() IS NOT NULL AND NOT EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'admin') THEN
+      NEW.role := OLD.role;
+    END IF;
+  END IF;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+CREATE TRIGGER prevent_role_change
+  BEFORE UPDATE ON profiles
+  FOR EACH ROW
+  EXECUTE FUNCTION prevent_role_escalation();
 
 -- ============================================
 -- FUNCTION: Auto-create profile on signup
