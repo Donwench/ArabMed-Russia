@@ -94,7 +94,8 @@ export default function SearchScreen() {
           ];
           results = results.filter((d: any) => {
             const addr = d.clinic_address?.toLowerCase() || '';
-            return cityNames.some((name) => addr.includes(name));
+            const cityName = d.city_name?.toLowerCase() || '';
+            return cityNames.some((name) => addr.includes(name) || cityName.includes(name));
           });
         }
       }
@@ -103,9 +104,13 @@ export default function SearchScreen() {
         const q = searchQuery.toLowerCase();
         results = results.filter(
           (d: any) =>
+            d.full_name?.toLowerCase().includes(q) ||
+            d.full_name_ru?.toLowerCase().includes(q) ||
             d.profile?.full_name?.toLowerCase().includes(q) ||
             d.clinic_name?.toLowerCase().includes(q) ||
-            d.clinic_address?.toLowerCase().includes(q)
+            d.clinic_address?.toLowerCase().includes(q) ||
+            d.specialty_text?.toLowerCase().includes(q) ||
+            d.city_name?.toLowerCase().includes(q)
         );
       }
 

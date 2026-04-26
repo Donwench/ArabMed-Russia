@@ -23,6 +23,8 @@ import FeedbackScreen from '../screens/FeedbackScreen';
 import AppointmentRequestScreen from '../screens/AppointmentRequestScreen';
 import AppointmentsScreen from '../screens/AppointmentsScreen';
 import NotificationsScreen from '../screens/NotificationsScreen';
+import SuggestDoctorScreen from '../screens/SuggestDoctorScreen';
+import AdminPanelScreen from '../screens/AdminPanelScreen';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 const Tab = createBottomTabNavigator<MainTabParamList>();
@@ -162,6 +164,16 @@ export default function AppNavigator() {
             <Stack.Screen
               name="Notifications"
               component={NotificationsScreen}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="SuggestDoctor"
+              component={SuggestDoctorScreen}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="AdminPanel"
+              component={AdminPanelScreen}
               options={{ headerShown: false }}
             />
           </>

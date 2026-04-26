@@ -11,7 +11,7 @@ export interface Profile {
 
 export interface Doctor {
   id: string;
-  profile_id: string;
+  profile_id: string | null;
   specialty_id: string;
   clinic_name: string;
   clinic_address: string;
@@ -25,6 +25,19 @@ export interface Doctor {
   about_ru: string;
   about_en: string;
   created_at: string;
+  // Phase 4: Scraped doctor fields
+  full_name: string;
+  full_name_ar: string;
+  full_name_ru: string;
+  photo_url: string | null;
+  external_rating: number | null;
+  external_review_count: number;
+  source: 'manual' | 'prodoctorov' | 'napopravku' | 'google' | 'community';
+  source_url: string | null;
+  source_id: string | null;
+  experience_years: number | null;
+  specialty_text: string;
+  city_name: string;
   // Joined fields
   profile?: Profile;
   specialty?: Specialty;
@@ -112,6 +125,24 @@ export interface PushToken {
   created_at: string;
 }
 
+export interface DoctorSuggestion {
+  id: string;
+  submitted_by: string | null;
+  doctor_name: string;
+  specialty: string;
+  clinic_name: string;
+  clinic_address: string;
+  city: string;
+  phone: string;
+  languages: string;
+  notes: string;
+  source_url: string | null;
+  status: 'pending' | 'approved' | 'rejected' | 'duplicate';
+  reviewed_by: string | null;
+  reviewed_at: string | null;
+  created_at: string;
+}
+
 export type RootStackParamList = {
   Auth: undefined;
   Main: undefined;
@@ -122,6 +153,8 @@ export type RootStackParamList = {
   AppointmentRequest: { doctorId: string; doctorName: string };
   Appointments: undefined;
   Notifications: undefined;
+  SuggestDoctor: undefined;
+  AdminPanel: undefined;
 };
 
 export type MainTabParamList = {
