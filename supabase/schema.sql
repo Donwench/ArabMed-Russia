@@ -91,6 +91,45 @@ CREATE TABLE IF NOT EXISTS feedback (
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
+-- Appointment Requests
+CREATE TABLE IF NOT EXISTS appointment_requests (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  patient_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
+  doctor_id UUID NOT NULL REFERENCES doctors(id) ON DELETE CASCADE,
+  preferred_date DATE NOT NULL,
+  preferred_time TEXT NOT NULL,
+  reason TEXT NOT NULL DEFAULT '',
+  phone TEXT NOT NULL DEFAULT '',
+  status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'confirmed', 'cancelled', 'completed')),
+  language TEXT NOT NULL DEFAULT 'en',
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- Notifications
+CREATE TABLE IF NOT EXISTS notifications (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
+  title_ar TEXT NOT NULL DEFAULT '',
+  title_ru TEXT NOT NULL DEFAULT '',
+  title_en TEXT NOT NULL DEFAULT '',
+  body_ar TEXT NOT NULL DEFAULT '',
+  body_ru TEXT NOT NULL DEFAULT '',
+  body_en TEXT NOT NULL DEFAULT '',
+  type TEXT NOT NULL DEFAULT 'general' CHECK (type IN ('appointment', 'review', 'verification', 'general')),
+  is_read BOOLEAN NOT NULL DEFAULT FALSE,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- Push Tokens
+CREATE TABLE IF NOT EXISTS push_tokens (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
+  token TEXT NOT NULL,
+  platform TEXT NOT NULL DEFAULT 'unknown',
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  UNIQUE(user_id)
+);
+
 -- ============================================
 -- INDEXES
 -- ============================================
@@ -101,6 +140,11 @@ CREATE INDEX IF NOT EXISTS idx_doctors_languages ON doctors USING GIN(languages_
 CREATE INDEX IF NOT EXISTS idx_reviews_doctor ON reviews(doctor_id);
 CREATE INDEX IF NOT EXISTS idx_favorites_patient ON favorites(patient_id);
 CREATE INDEX IF NOT EXISTS idx_profiles_role ON profiles(role);
+CREATE INDEX IF NOT EXISTS idx_appointments_patient ON appointment_requests(patient_id);
+CREATE INDEX IF NOT EXISTS idx_appointments_doctor ON appointment_requests(doctor_id);
+CREATE INDEX IF NOT EXISTS idx_appointments_status ON appointment_requests(status);
+CREATE INDEX IF NOT EXISTS idx_notifications_user ON notifications(user_id);
+CREATE INDEX IF NOT EXISTS idx_notifications_read ON notifications(user_id, is_read);
 
 -- ============================================
 -- ROW LEVEL SECURITY
@@ -142,6 +186,27 @@ CREATE POLICY "Cities are viewable by everyone" ON cities FOR SELECT USING (true
 ALTER TABLE feedback ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Anyone can submit feedback" ON feedback FOR INSERT WITH CHECK (true);
 CREATE POLICY "Users can view own feedback" ON feedback FOR SELECT USING (auth.uid() = user_id);
+
+-- Appointment Requests: patients create/read own, doctors read theirs
+ALTER TABLE appointment_requests ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Patients can create appointments" ON appointment_requests FOR INSERT WITH CHECK (auth.uid() = patient_id);
+CREATE POLICY "Patients can view own appointments" ON appointment_requests FOR SELECT USING (auth.uid() = patient_id);
+CREATE POLICY "Doctors can view their appointments" ON appointment_requests FOR SELECT USING (
+  doctor_id IN (SELECT id FROM doctors WHERE profile_id = auth.uid())
+);
+CREATE POLICY "Doctors can update appointment status" ON appointment_requests FOR UPDATE USING (
+  doctor_id IN (SELECT id FROM doctors WHERE profile_id = auth.uid())
+);
+
+-- Notifications: users read/update own
+ALTER TABLE notifications ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Users can view own notifications" ON notifications FOR SELECT USING (auth.uid() = user_id);
+CREATE POLICY "Users can update own notifications" ON notifications FOR UPDATE USING (auth.uid() = user_id);
+CREATE POLICY "System can create notifications" ON notifications FOR INSERT WITH CHECK (true);
+
+-- Push Tokens: users manage own
+ALTER TABLE push_tokens ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Users can manage own push tokens" ON push_tokens FOR ALL USING (auth.uid() = user_id);
 
 -- ============================================
 -- FUNCTION: Auto-create profile on signup
@@ -195,5 +260,12 @@ INSERT INTO cities (name_ar, name_ru, name_en, latitude, longitude) VALUES
   ('نوفوسيبيرسك', 'Новосибирск', 'Novosibirsk', 55.0084, 82.9357),
   ('كراسنودار', 'Краснодар', 'Krasnodar', 45.0355, 38.9753),
   ('روستوف على الدون', 'Ростов-на-Дону', 'Rostov-on-Don', 47.2357, 39.7015),
-  ('سوتشي', 'Сочи', 'Sochi', 43.6028, 39.7342)
+  ('سوتشي', 'Сочи', 'Sochi', 43.6028, 39.7342),
+  ('نيجني نوفغورود', 'Нижний Новгород', 'Nizhny Novgorod', 56.2965, 43.9361),
+  ('سمارة', 'Самара', 'Samara', 53.1959, 50.1002),
+  ('أوفا', 'Уфа', 'Ufa', 54.7388, 55.9721),
+  ('فولغوغراد', 'Волгоград', 'Volgograd', 48.7080, 44.5133),
+  ('بيرم', 'Пермь', 'Perm', 58.0105, 56.2502),
+  ('فورونيج', 'Воронеж', 'Voronezh', 51.6720, 39.1843),
+  ('تشيليابينسك', 'Челябинск', 'Chelyabinsk', 55.1644, 61.4368)
 ON CONFLICT DO NOTHING;

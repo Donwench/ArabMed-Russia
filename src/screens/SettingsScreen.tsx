@@ -119,8 +119,18 @@ export default function SettingsScreen() {
         </TouchableOpacity>
       </View>
 
-      {/* Feedback */}
+      {/* Notifications & Feedback */}
       <View style={styles.section}>
+        <TouchableOpacity
+          style={[styles.optionRow, isRTL && styles.rowRTL]}
+          onPress={() => navigation.navigate('Notifications' as any)}
+        >
+          <Ionicons name="notifications-outline" size={22} color={colors.primary} />
+          <Text style={[styles.optionText, isRTL && styles.rtlText, { flex: 1, marginHorizontal: spacing.md }]}>
+            {t('settings.notifications')}
+          </Text>
+          <Ionicons name={isRTL ? 'chevron-back' : 'chevron-forward'} size={20} color={colors.textLight} />
+        </TouchableOpacity>
         <TouchableOpacity
           style={[styles.optionRow, isRTL && styles.rowRTL]}
           onPress={() => navigation.navigate('Feedback' as any)}
@@ -140,7 +150,7 @@ export default function SettingsScreen() {
           <Text style={[styles.optionText, isRTL && styles.rtlText, { flex: 1, marginHorizontal: spacing.md }]}>
             {t('settings.version')}
           </Text>
-          <Text style={styles.versionText}>1.1.0</Text>
+          <Text style={styles.versionText}>1.2.0</Text>
         </View>
       </View>
 

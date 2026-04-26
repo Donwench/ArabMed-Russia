@@ -20,6 +20,9 @@ import DoctorProfileScreen from '../screens/DoctorProfileScreen';
 import WriteReviewScreen from '../screens/WriteReviewScreen';
 import DoctorRegistrationScreen from '../screens/DoctorRegistrationScreen';
 import FeedbackScreen from '../screens/FeedbackScreen';
+import AppointmentRequestScreen from '../screens/AppointmentRequestScreen';
+import AppointmentsScreen from '../screens/AppointmentsScreen';
+import NotificationsScreen from '../screens/NotificationsScreen';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 const Tab = createBottomTabNavigator<MainTabParamList>();
@@ -63,6 +66,16 @@ function MainTabs() {
           tabBarLabel: t('common.search'),
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="search" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Appointments"
+        component={AppointmentsScreen}
+        options={{
+          tabBarLabel: t('appointment.myAppointments').split(' ')[0],
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="calendar" size={size} color={color} />
           ),
         }}
       />
@@ -139,6 +152,16 @@ export default function AppNavigator() {
             <Stack.Screen
               name="Feedback"
               component={FeedbackScreen}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="AppointmentRequest"
+              component={AppointmentRequestScreen}
+              options={{ headerShown: true, headerTitle: '', headerBackTitle: '' }}
+            />
+            <Stack.Screen
+              name="Notifications"
+              component={NotificationsScreen}
               options={{ headerShown: false }}
             />
           </>
