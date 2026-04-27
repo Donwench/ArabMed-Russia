@@ -41,8 +41,34 @@ ALTER TABLE loyalty_points ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Users can view own loyalty points" ON loyalty_points
   FOR SELECT USING (auth.uid() = user_id);
 
-CREATE POLICY "Users can earn loyalty points" ON loyalty_points
-  FOR INSERT WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "Service role can award loyalty points" ON loyalty_points
+  FOR INSERT WITH CHECK (auth.jwt() ->> 'role' = 'service_role');
+
+-- Server-side function to award points with validation
+CREATE OR REPLACE FUNCTION award_loyalty_points(
+  p_user_id UUID,
+  p_action TEXT,
+  p_description TEXT DEFAULT NULL
+) RETURNS VOID AS $$
+DECLARE
+  v_points INTEGER;
+BEGIN
+  v_points := CASE p_action
+    WHEN 'daily_login' THEN 5
+    WHEN 'write_review' THEN 50
+    WHEN 'refer_friend' THEN 100
+    WHEN 'book_appointment' THEN 25
+    WHEN 'complete_profile' THEN 30
+    WHEN 'suggest_doctor_approved' THEN 75
+    ELSE NULL
+  END;
+  IF v_points IS NULL THEN
+    RAISE EXCEPTION 'Invalid loyalty action: %', p_action;
+  END IF;
+  INSERT INTO loyalty_points (user_id, action, points, description)
+  VALUES (p_user_id, p_action, v_points, p_description);
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
 
 CREATE INDEX IF NOT EXISTS idx_loyalty_points_user_id ON loyalty_points(user_id);
 
@@ -63,8 +89,8 @@ CREATE POLICY "Users can view own referral code" ON referral_codes
 CREATE POLICY "Users can create own referral code" ON referral_codes
   FOR INSERT WITH CHECK (auth.uid() = user_id);
 
-CREATE POLICY "Users can update own referral code" ON referral_codes
-  FOR UPDATE USING (auth.uid() = user_id);
+CREATE POLICY "Service role can update referral codes" ON referral_codes
+  FOR UPDATE USING (auth.jwt() ->> 'role' = 'service_role');
 
 CREATE INDEX IF NOT EXISTS idx_referral_codes_code ON referral_codes(code);
 

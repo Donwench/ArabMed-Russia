@@ -71,12 +71,10 @@ export async function getUserLoyaltyInfo(userId: string): Promise<LoyaltyInfo> {
 }
 
 export async function awardPoints(userId: string, action: keyof typeof POINT_ACTIONS, description: string): Promise<void> {
-  const points = POINT_ACTIONS[action];
-  await supabase.from('loyalty_points').insert({
-    user_id: userId,
-    action,
-    points,
-    description,
+  await supabase.rpc('award_loyalty_points', {
+    p_user_id: userId,
+    p_action: action,
+    p_description: description,
   });
 }
 
