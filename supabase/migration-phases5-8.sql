@@ -53,6 +53,9 @@ CREATE OR REPLACE FUNCTION award_loyalty_points(
 DECLARE
   v_points INTEGER;
 BEGIN
+  IF auth.uid() IS NULL OR auth.uid() != p_user_id THEN
+    RAISE EXCEPTION 'Unauthorized: can only award points to yourself';
+  END IF;
   v_points := CASE p_action
     WHEN 'daily_login' THEN 5
     WHEN 'write_review' THEN 50

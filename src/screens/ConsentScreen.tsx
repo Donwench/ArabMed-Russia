@@ -11,6 +11,7 @@ import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { colors, spacing, borderRadius, fontSize, fontWeight, shadows } from '../lib/theme';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { supabase } from '../lib/supabase';
 
 interface ConsentScreenProps {
   onAccept: () => void;
@@ -42,6 +43,16 @@ export default function ConsentScreen({ onAccept }: ConsentScreenProps) {
     try {
       await AsyncStorage.setItem(CONSENT_KEY, 'true');
       await AsyncStorage.setItem('@arabmed_marketing_consent', marketingOptIn ? 'true' : 'false');
+      const { data: userData } = await supabase.auth.getUser();
+      if (userData.user) {
+        await supabase.from('user_consents').insert({
+          user_id: userData.user.id,
+          privacy_accepted: privacyAccepted,
+          terms_accepted: termsAccepted,
+          marketing_consent: marketingOptIn,
+          age_confirmed: ageConfirmed,
+        });
+      }
       onAccept();
     } catch {
       onAccept();
