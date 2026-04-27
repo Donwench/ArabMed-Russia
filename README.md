@@ -1,4 +1,4 @@
-# ArabMed Russia
+# Russian ArabMed
 
 Arabic Doctors Directory in Russia - Find Arabic-speaking doctors near you.
 

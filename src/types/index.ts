@@ -195,6 +195,19 @@ export interface UserConsent {
   consent_date: string;
 }
 
+export interface Payment {
+  id: string;
+  user_id: string;
+  amount: number;
+  currency: string;
+  payment_method: 'yookassa' | 'paypal' | 'usdt';
+  payment_type: 'doctor_registration' | 'doctor_monthly' | 'user_subscription';
+  status: 'pending' | 'confirmed' | 'failed' | 'refunded';
+  external_id: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
 export type RootStackParamList = {
   Auth: undefined;
   Main: undefined;

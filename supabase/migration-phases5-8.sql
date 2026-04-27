@@ -220,3 +220,33 @@ CREATE TRIGGER on_new_user_free_trial
   AFTER INSERT ON profiles
   FOR EACH ROW
   EXECUTE FUNCTION create_free_trial();
+
+-- ============================================
+-- Phase 9: Payments table (YooKassa + PayPal + USDT)
+-- ============================================
+CREATE TABLE IF NOT EXISTS payments (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
+  amount NUMERIC(10, 2) NOT NULL,
+  currency TEXT NOT NULL DEFAULT 'RUB',
+  payment_method TEXT NOT NULL CHECK (payment_method IN ('yookassa', 'paypal', 'usdt')),
+  payment_type TEXT NOT NULL CHECK (payment_type IN ('doctor_registration', 'doctor_monthly', 'user_subscription')),
+  status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'confirmed', 'failed', 'refunded')),
+  external_id TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+ALTER TABLE payments ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Users can view own payments" ON payments
+  FOR SELECT USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can create own payments" ON payments
+  FOR INSERT WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Service role can manage payments" ON payments
+  FOR ALL USING (auth.jwt() ->> 'role' = 'service_role');
+
+CREATE INDEX IF NOT EXISTS idx_payments_user_id ON payments(user_id);
+CREATE INDEX IF NOT EXISTS idx_payments_status ON payments(status) WHERE status = 'pending';

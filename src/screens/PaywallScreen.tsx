@@ -6,6 +6,8 @@ import {
   TouchableOpacity,
   ScrollView,
   SafeAreaView,
+  Linking,
+  Platform,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
@@ -13,6 +15,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { colors, spacing, borderRadius, fontSize, fontWeight, shadows } from '../lib/theme';
 import { useToast } from '../components/Toast';
 import { SubscriptionTier, SUBSCRIPTION_PRICES, DOCTOR_FEE } from '../lib/subscription';
+import { PAYMENT_CONFIG, PaymentMethod, DOCTOR_FEES, getPayPalLink, getUSDTPaymentInfo, createDoctorPayment } from '../lib/payments';
+import { supabase } from '../lib/supabase';
 
 type BillingPeriod = 'monthly' | 'yearly';
 
@@ -55,8 +59,49 @@ export default function PaywallScreen() {
     return savings;
   };
 
-  const handleSubscribe = () => {
-    showToast(t('subscription.comingSoon'), undefined, 'info');
+  const [selectedPayment, setSelectedPayment] = useState<PaymentMethod>('yookassa');
+  const [paymentLoading, setPaymentLoading] = useState(false);
+
+  const handleSubscribe = async () => {
+    setPaymentLoading(true);
+    try {
+      const { data: userData } = await supabase.auth.getUser();
+      if (!userData.user) {
+        showToast(t('common.error'), undefined, 'error');
+        return;
+      }
+
+      if (selectedPayment === 'yookassa') {
+        const result = await createDoctorPayment(userData.user.id, 'user_subscription');
+        if (result) {
+          showToast(t('subscription.paymentCreated'), t('subscription.redirecting'), 'success');
+          await Linking.openURL(result.checkoutUrl);
+        } else {
+          showToast(t('common.error'), undefined, 'error');
+        }
+      } else if (selectedPayment === 'paypal') {
+        const link = getPayPalLink(getPrice(selectedTier === 'free' ? 'premium' : selectedTier as 'premium' | 'doctor_pro'));
+        if (link) {
+          await Linking.openURL(link);
+        } else {
+          showToast(t('subscription.paypalNotConfigured'), undefined, 'error');
+        }
+      } else if (selectedPayment === 'usdt') {
+        const info = getUSDTPaymentInfo();
+        if (info.address) {
+          if (Platform.OS === 'web') {
+            await navigator.clipboard.writeText(info.address);
+          }
+          showToast(t('subscription.usdtAddress'), info.address, 'info');
+        } else {
+          showToast(t('subscription.cryptoNotConfigured'), undefined, 'error');
+        }
+      }
+    } catch {
+      showToast(t('common.error'), undefined, 'error');
+    } finally {
+      setPaymentLoading(false);
+    }
   };
 
   const handleRestore = () => {
