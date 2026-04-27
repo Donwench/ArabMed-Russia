@@ -18,6 +18,7 @@ import { supabase } from '../lib/supabase';
 import { Doctor, Specialty, RootStackParamList } from '../types';
 import { colors, spacing, borderRadius, fontSize, fontWeight, shadows } from '../lib/theme';
 import DoctorCard from '../components/DoctorCard';
+import MedicalDisclaimer from '../components/MedicalDisclaimer';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
@@ -218,6 +219,7 @@ export default function HomeScreen() {
 
   return (
     <View style={styles.container}>
+      <MedicalDisclaimer compact />
       <FlatList
         data={filteredDoctors}
         keyExtractor={(item) => item.id}

@@ -13,8 +13,9 @@ import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { supabase } from '../lib/supabase';
 import { Specialty } from '../types';
-import { colors, spacing, borderRadius, fontSize, fontWeight } from '../lib/theme';
+import { colors, spacing, borderRadius, fontSize, fontWeight, shadows } from '../lib/theme';
 import { useToast } from '../components/Toast';
+import { DOCTOR_FEE } from '../lib/subscription';
 
 const LANGUAGE_OPTIONS = [
   { code: 'ar', labelKey: 'languages.ar' },
@@ -108,6 +109,45 @@ export default function DoctorRegistrationScreen() {
         <Text style={[styles.title, isRTL && styles.rtlText]}>
           {t('doctorRegistration.title')}
         </Text>
+
+        {/* Doctor Fee Pricing Card */}
+        <View style={styles.pricingCard}>
+          <View style={[styles.pricingHeader, isRTL && styles.rowRTL]}>
+            <Ionicons name="medical" size={24} color={colors.primary} />
+            <Text style={[styles.pricingTitle, isRTL && styles.rtlText]}>
+              {t('doctorRegistration.pricingTitle')}
+            </Text>
+          </View>
+          <View style={styles.pricingItems}>
+            <View style={[styles.pricingRow, isRTL && styles.rowRTL]}>
+              <Ionicons name="card-outline" size={18} color={colors.secondary} />
+              <Text style={[styles.pricingText, isRTL && styles.rtlText, { flex: 1 }]}>
+                {t('doctorRegistration.registrationFee')}
+              </Text>
+              <Text style={styles.pricingAmount}>
+                {DOCTOR_FEE.registrationFee} ₽
+              </Text>
+            </View>
+            <View style={[styles.pricingRow, isRTL && styles.rowRTL]}>
+              <Ionicons name="calendar-outline" size={18} color={colors.secondary} />
+              <Text style={[styles.pricingText, isRTL && styles.rtlText, { flex: 1 }]}>
+                {t('doctorRegistration.monthlyFee')}
+              </Text>
+              <Text style={styles.pricingAmount}>
+                {DOCTOR_FEE.monthlySubscription} ₽/{t('subscription.mo')}
+              </Text>
+            </View>
+          </View>
+          <View style={styles.trialBanner}>
+            <Ionicons name="gift-outline" size={20} color={colors.primary} />
+            <Text style={[styles.trialText, isRTL && styles.rtlText]}>
+              {t('doctorRegistration.freeTrial', { days: DOCTOR_FEE.trialDays })}
+            </Text>
+          </View>
+          <Text style={[styles.pricingNote, isRTL && styles.rtlText]}>
+            {t('doctorRegistration.pricingNote')}
+          </Text>
+        </View>
 
         {/* Clinic Name */}
         <Text style={[styles.label, isRTL && styles.rtlText]}>
@@ -315,5 +355,66 @@ const styles = StyleSheet.create({
     color: colors.white,
     fontSize: fontSize.lg,
     fontWeight: fontWeight.semibold,
+  },
+  rowRTL: {
+    flexDirection: 'row-reverse',
+  },
+  pricingCard: {
+    backgroundColor: colors.surface,
+    borderRadius: borderRadius.lg,
+    borderWidth: 1,
+    borderColor: colors.primary,
+    padding: spacing.md,
+    marginBottom: spacing.lg,
+    ...shadows.sm,
+  },
+  pricingHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    marginBottom: spacing.md,
+  },
+  pricingTitle: {
+    fontSize: fontSize.lg,
+    fontWeight: fontWeight.bold,
+    color: colors.text,
+  },
+  pricingItems: {
+    gap: spacing.sm,
+    marginBottom: spacing.md,
+  },
+  pricingRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    paddingVertical: spacing.xs,
+  },
+  pricingText: {
+    fontSize: fontSize.md,
+    color: colors.text,
+  },
+  pricingAmount: {
+    fontSize: fontSize.md,
+    fontWeight: fontWeight.bold,
+    color: colors.primary,
+  },
+  trialBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    backgroundColor: '#F0FDF4',
+    borderRadius: borderRadius.sm,
+    padding: spacing.sm,
+    marginBottom: spacing.sm,
+  },
+  trialText: {
+    fontSize: fontSize.sm,
+    color: colors.primary,
+    fontWeight: fontWeight.medium,
+  },
+  pricingNote: {
+    fontSize: 11,
+    color: colors.textLight,
+    lineHeight: 16,
   },
 });

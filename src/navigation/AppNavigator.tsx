@@ -25,6 +25,11 @@ import AppointmentsScreen from '../screens/AppointmentsScreen';
 import NotificationsScreen from '../screens/NotificationsScreen';
 import SuggestDoctorScreen from '../screens/SuggestDoctorScreen';
 import AdminPanelScreen from '../screens/AdminPanelScreen';
+import PaywallScreen from '../screens/PaywallScreen';
+import LoyaltyScreen from '../screens/LoyaltyScreen';
+import PrivacyPolicyScreen from '../screens/PrivacyPolicyScreen';
+import TermsOfServiceScreen from '../screens/TermsOfServiceScreen';
+import ConsentScreen, { hasAcceptedConsent } from '../screens/ConsentScreen';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 const Tab = createBottomTabNavigator<MainTabParamList>();
@@ -108,15 +113,30 @@ function MainTabs() {
 export default function AppNavigator() {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const [consentAccepted, setConsentAccepted] = useState(false);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    const init = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
       setSession(session);
+      if (session?.user?.id) {
+        const accepted = await hasAcceptedConsent(session.user.id);
+        setConsentAccepted(accepted);
+      } else {
+        setConsentAccepted(false);
+      }
       setLoading(false);
-    });
+    };
+    init();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
       setSession(session);
+      if (session?.user?.id) {
+        const accepted = await hasAcceptedConsent(session.user.id);
+        setConsentAccepted(accepted);
+      } else {
+        setConsentAccepted(false);
+      }
     });
 
     return () => subscription.unsubscribe();
@@ -133,7 +153,11 @@ export default function AppNavigator() {
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
-        {session ? (
+        {session && !consentAccepted ? (
+          <Stack.Screen name="Consent">
+            {() => <ConsentScreen onAccept={() => setConsentAccepted(true)} />}
+          </Stack.Screen>
+        ) : session ? (
           <>
             <Stack.Screen name="Main" component={MainTabs} />
             <Stack.Screen
@@ -174,6 +198,26 @@ export default function AppNavigator() {
             <Stack.Screen
               name="AdminPanel"
               component={AdminPanelScreen}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="Paywall"
+              component={PaywallScreen}
+              options={{ headerShown: false, presentation: 'modal' }}
+            />
+            <Stack.Screen
+              name="Loyalty"
+              component={LoyaltyScreen}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="PrivacyPolicy"
+              component={PrivacyPolicyScreen}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="TermsOfService"
+              component={TermsOfServiceScreen}
               options={{ headerShown: false }}
             />
           </>
