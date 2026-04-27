@@ -119,14 +119,24 @@ export default function AppNavigator() {
     const init = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       setSession(session);
-      const accepted = await hasAcceptedConsent();
-      setConsentAccepted(accepted);
+      if (session?.user?.id) {
+        const accepted = await hasAcceptedConsent(session.user.id);
+        setConsentAccepted(accepted);
+      } else {
+        setConsentAccepted(false);
+      }
       setLoading(false);
     };
     init();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
       setSession(session);
+      if (session?.user?.id) {
+        const accepted = await hasAcceptedConsent(session.user.id);
+        setConsentAccepted(accepted);
+      } else {
+        setConsentAccepted(false);
+      }
     });
 
     return () => subscription.unsubscribe();

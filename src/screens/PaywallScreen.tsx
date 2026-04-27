@@ -15,7 +15,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { colors, spacing, borderRadius, fontSize, fontWeight, shadows } from '../lib/theme';
 import { useToast } from '../components/Toast';
 import { SubscriptionTier, SUBSCRIPTION_PRICES, DOCTOR_FEE } from '../lib/subscription';
-import { PAYMENT_CONFIG, PaymentMethod, DOCTOR_FEES, getPayPalLink, getUSDTPaymentInfo, createDoctorPayment } from '../lib/payments';
+import { PAYMENT_CONFIG, PaymentMethod, DOCTOR_FEES, USER_TIERS, getPayPalLink, getUSDTPaymentInfo, createDoctorPayment } from '../lib/payments';
 import { supabase } from '../lib/supabase';
 
 type BillingPeriod = 'monthly' | 'yearly';
@@ -72,7 +72,11 @@ export default function PaywallScreen() {
       }
 
       if (selectedPayment === 'yookassa') {
-        const result = await createDoctorPayment(userData.user.id, 'user_subscription');
+        const tierKey = selectedTier === 'free' ? 'premium' : selectedTier;
+        const rubAmount = tierKey === 'premium'
+          ? (billingPeriod === 'monthly' ? USER_TIERS.premium.price : USER_TIERS.premium.price * 10)
+          : (billingPeriod === 'monthly' ? USER_TIERS.doctor_pro.price : USER_TIERS.doctor_pro.price * 10);
+        const result = await createDoctorPayment(userData.user.id, 'user_subscription', rubAmount);
         if (result) {
           showToast(t('subscription.paymentCreated'), t('subscription.redirecting'), 'success');
           await Linking.openURL(result.checkoutUrl);

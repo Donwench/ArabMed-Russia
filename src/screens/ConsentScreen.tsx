@@ -17,11 +17,12 @@ interface ConsentScreenProps {
   onAccept: () => void;
 }
 
-const CONSENT_KEY = '@arabmed_consent_accepted';
+const CONSENT_KEY_PREFIX = '@arabmed_consent_accepted_';
 
-export async function hasAcceptedConsent(): Promise<boolean> {
+export async function hasAcceptedConsent(userId?: string): Promise<boolean> {
   try {
-    const value = await AsyncStorage.getItem(CONSENT_KEY);
+    if (!userId) return false;
+    const value = await AsyncStorage.getItem(`${CONSENT_KEY_PREFIX}${userId}`);
     return value === 'true';
   } catch {
     return false;
@@ -41,9 +42,10 @@ export default function ConsentScreen({ onAccept }: ConsentScreenProps) {
 
   const handleAccept = async () => {
     try {
-      await AsyncStorage.setItem(CONSENT_KEY, 'true');
-      await AsyncStorage.setItem('@arabmed_marketing_consent', marketingOptIn ? 'true' : 'false');
       const { data: userData } = await supabase.auth.getUser();
+      const uid = userData.user?.id || '';
+      await AsyncStorage.setItem(`${CONSENT_KEY_PREFIX}${uid}`, 'true');
+      await AsyncStorage.setItem(`@arabmed_marketing_consent_${uid}`, marketingOptIn ? 'true' : 'false');
       if (userData.user) {
         await supabase.from('user_consents').insert({
           user_id: userData.user.id,
