@@ -58,7 +58,7 @@ export default function SettingsScreen() {
     const doDelete = async () => {
       const { data: userData } = await supabase.auth.getUser();
       if (!userData.user) {
-        showToast(t('common.error'), 'error');
+        showToast(t('common.error'), undefined, 'error');
         return;
       }
       const { error } = await supabase.from('data_deletion_requests').insert({
@@ -66,10 +66,10 @@ export default function SettingsScreen() {
         status: 'pending',
       });
       if (error) {
-        showToast(t('common.error'), 'error');
+        showToast(t('common.error'), undefined, 'error');
         return;
       }
-      showToast(t('settings.deleteSuccess'), 'success');
+      showToast(t('settings.deleteSuccess'), undefined, 'success');
     };
 
     if (Platform.OS === 'web') {

@@ -56,11 +56,11 @@ export default function PaywallScreen() {
   };
 
   const handleSubscribe = () => {
-    showToast(t('subscription.comingSoon'), 'info');
+    showToast(t('subscription.comingSoon'), undefined, 'info');
   };
 
   const handleRestore = () => {
-    showToast(t('subscription.restoreInfo'), 'info');
+    showToast(t('subscription.restoreInfo'), undefined, 'info');
   };
 
   return (

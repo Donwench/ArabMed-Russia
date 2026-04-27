@@ -50,14 +50,17 @@ export default function LoyaltyScreen() {
     const info = await getUserLoyaltyInfo(userData.user.id);
 
     if (!info.referralCode) {
-      const code = generateReferralCode();
-      const { error } = await supabase.from('referral_codes').insert({
-        user_id: userData.user.id,
-        code,
-        used_count: 0,
-      });
-      if (!error) {
-        info.referralCode = code;
+      for (let attempt = 0; attempt < 3; attempt++) {
+        const code = generateReferralCode();
+        const { error } = await supabase.from('referral_codes').insert({
+          user_id: userData.user.id,
+          code,
+          used_count: 0,
+        });
+        if (!error) {
+          info.referralCode = code;
+          break;
+        }
       }
     }
 
@@ -81,7 +84,7 @@ export default function LoyaltyScreen() {
         message: t('loyalty.shareMessage', { code: loyalty.referralCode }),
       });
     } catch {
-      showToast(t('common.error'), 'error');
+      showToast(t('common.error'), undefined, 'error');
     }
   };
 
