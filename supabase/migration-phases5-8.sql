@@ -52,6 +52,7 @@ CREATE OR REPLACE FUNCTION award_loyalty_points(
 ) RETURNS VOID AS $$
 DECLARE
   v_points INTEGER;
+  v_existing BOOLEAN;
 BEGIN
   IF auth.uid() IS NULL OR auth.uid() != p_user_id THEN
     RAISE EXCEPTION 'Unauthorized: can only award points to yourself';
@@ -67,6 +68,27 @@ BEGIN
   END;
   IF v_points IS NULL THEN
     RAISE EXCEPTION 'Invalid loyalty action: %', p_action;
+  END IF;
+  -- Deduplication: prevent repeated awarding of the same action
+  IF p_action = 'daily_login' THEN
+    SELECT EXISTS(
+      SELECT 1 FROM loyalty_points
+      WHERE user_id = p_user_id AND action = 'daily_login'
+        AND created_at >= date_trunc('day', NOW())
+    ) INTO v_existing;
+  ELSIF p_action = 'complete_profile' THEN
+    SELECT EXISTS(
+      SELECT 1 FROM loyalty_points
+      WHERE user_id = p_user_id AND action = 'complete_profile'
+    ) INTO v_existing;
+  ELSE
+    SELECT EXISTS(
+      SELECT 1 FROM loyalty_points
+      WHERE user_id = p_user_id AND action = p_action AND description = p_description
+    ) INTO v_existing;
+  END IF;
+  IF v_existing THEN
+    RETURN;
   END IF;
   INSERT INTO loyalty_points (user_id, action, points, description)
   VALUES (p_user_id, p_action, v_points, p_description);

@@ -95,7 +95,7 @@ export default function ConsentScreen({ onAccept }: ConsentScreenProps) {
         </View>
 
         {/* Medical Disclaimer */}
-        <View style={styles.disclaimerBox}>
+        <View style={[styles.disclaimerBox, isRTL && { flexDirection: 'row-reverse' }]}>
           <Ionicons name="medical" size={24} color={colors.warning} />
           <Text style={[styles.disclaimerText, isRTL && styles.rtlText]}>{t('legal.medicalDisclaimer')}</Text>
         </View>

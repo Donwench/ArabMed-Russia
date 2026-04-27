@@ -40,7 +40,7 @@ export default function TermsOfServiceScreen() {
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <Text style={[styles.lastUpdated, isRTL && styles.rtlText]}>{t('legal.terms.lastUpdated')}</Text>
 
-        <View style={styles.medicalDisclaimer}>
+        <View style={[styles.medicalDisclaimer, isRTL && { flexDirection: 'row-reverse' }]}>
           <Ionicons name="warning" size={24} color={colors.warning} />
           <Text style={[styles.disclaimerText, isRTL && styles.rtlText]}>{t('legal.medicalDisclaimer')}</Text>
         </View>
