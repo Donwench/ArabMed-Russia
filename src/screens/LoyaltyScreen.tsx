@@ -51,12 +51,14 @@ export default function LoyaltyScreen() {
 
     if (!info.referralCode) {
       const code = generateReferralCode();
-      await supabase.from('referral_codes').insert({
+      const { error } = await supabase.from('referral_codes').insert({
         user_id: userData.user.id,
         code,
         used_count: 0,
       });
-      info.referralCode = code;
+      if (!error) {
+        info.referralCode = code;
+      }
     }
 
     setLoyalty(info);

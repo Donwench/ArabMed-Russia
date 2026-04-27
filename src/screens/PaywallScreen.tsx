@@ -12,7 +12,7 @@ import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { colors, spacing, borderRadius, fontSize, fontWeight, shadows } from '../lib/theme';
 import { useToast } from '../components/Toast';
-import { SubscriptionTier, SUBSCRIPTION_PRICES } from '../lib/subscription';
+import { SubscriptionTier, SUBSCRIPTION_PRICES, DOCTOR_FEE } from '../lib/subscription';
 
 type BillingPeriod = 'monthly' | 'yearly';
 
@@ -176,6 +176,45 @@ export default function PaywallScreen() {
         </TouchableOpacity>
 
         <Text style={[styles.legalText, isRTL && styles.rtlText]}>{t('subscription.legalNote')}</Text>
+
+        {/* Doctor Registration Fee Section */}
+        <View style={styles.doctorFeeSection}>
+          <View style={[styles.doctorFeeHeader, isRTL && styles.rowRTL]}>
+            <Ionicons name="medical" size={24} color={colors.secondary} />
+            <Text style={[styles.doctorFeeTitle, isRTL && styles.rtlText]}>
+              {t('subscription.doctorFee.title')}
+            </Text>
+          </View>
+          <Text style={[styles.doctorFeeDesc, isRTL && styles.rtlText]}>
+            {t('subscription.doctorFee.description')}
+          </Text>
+          <View style={styles.doctorFeeItems}>
+            <View style={[styles.doctorFeeRow, isRTL && styles.rowRTL]}>
+              <View style={styles.doctorFeeBullet}>
+                <Ionicons name="card-outline" size={16} color={colors.white} />
+              </View>
+              <Text style={[styles.doctorFeeText, isRTL && styles.rtlText, { flex: 1 }]}>
+                {t('subscription.doctorFee.registration')}
+              </Text>
+              <Text style={styles.doctorFeeAmount}>{DOCTOR_FEE.registrationFee} ₽</Text>
+            </View>
+            <View style={[styles.doctorFeeRow, isRTL && styles.rowRTL]}>
+              <View style={styles.doctorFeeBullet}>
+                <Ionicons name="calendar-outline" size={16} color={colors.white} />
+              </View>
+              <Text style={[styles.doctorFeeText, isRTL && styles.rtlText, { flex: 1 }]}>
+                {t('subscription.doctorFee.monthly')}
+              </Text>
+              <Text style={styles.doctorFeeAmount}>{DOCTOR_FEE.monthlySubscription} ₽/{t('subscription.mo')}</Text>
+            </View>
+          </View>
+          <View style={styles.doctorTrialBanner}>
+            <Ionicons name="gift-outline" size={18} color={colors.primary} />
+            <Text style={[styles.doctorTrialText, isRTL && styles.rtlText]}>
+              {t('subscription.doctorFee.trial', { days: DOCTOR_FEE.trialDays })}
+            </Text>
+          </View>
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -383,5 +422,70 @@ const styles = StyleSheet.create({
     color: colors.textLight,
     textAlign: 'center',
     lineHeight: 16,
+    marginBottom: spacing.lg,
+  },
+  doctorFeeSection: {
+    backgroundColor: colors.surface,
+    borderRadius: borderRadius.lg,
+    borderWidth: 1,
+    borderColor: colors.secondary,
+    padding: spacing.md,
+    marginTop: spacing.md,
+  },
+  doctorFeeHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    marginBottom: spacing.sm,
+  },
+  doctorFeeTitle: {
+    fontSize: fontSize.lg,
+    fontWeight: fontWeight.bold,
+    color: colors.text,
+  },
+  doctorFeeDesc: {
+    fontSize: fontSize.sm,
+    color: colors.textSecondary,
+    marginBottom: spacing.md,
+    lineHeight: 20,
+  },
+  doctorFeeItems: {
+    gap: spacing.sm,
+    marginBottom: spacing.md,
+  },
+  doctorFeeRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
+  doctorFeeBullet: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: colors.secondary,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  doctorFeeText: {
+    fontSize: fontSize.md,
+    color: colors.text,
+  },
+  doctorFeeAmount: {
+    fontSize: fontSize.md,
+    fontWeight: fontWeight.bold,
+    color: colors.secondary,
+  },
+  doctorTrialBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    backgroundColor: '#F0FDF4',
+    borderRadius: borderRadius.sm,
+    padding: spacing.sm,
+  },
+  doctorTrialText: {
+    fontSize: fontSize.sm,
+    color: colors.primary,
+    fontWeight: fontWeight.medium,
   },
 });

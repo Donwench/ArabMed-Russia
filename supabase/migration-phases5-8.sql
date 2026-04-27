@@ -111,6 +111,48 @@ CREATE POLICY "Users can view own deletion requests" ON data_deletion_requests
 CREATE POLICY "Users can create deletion requests" ON data_deletion_requests
   FOR INSERT WITH CHECK (auth.uid() = user_id);
 
+-- Doctor Registration Fees table
+CREATE TABLE IF NOT EXISTS doctor_subscriptions (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
+  registration_paid BOOLEAN NOT NULL DEFAULT false,
+  registration_amount INTEGER NOT NULL DEFAULT 1000,
+  monthly_amount INTEGER NOT NULL DEFAULT 500,
+  currency TEXT NOT NULL DEFAULT 'RUB',
+  trial_ends_at TIMESTAMPTZ,
+  expires_at TIMESTAMPTZ,
+  is_active BOOLEAN NOT NULL DEFAULT true,
+  payment_method TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+ALTER TABLE doctor_subscriptions ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Users can view own doctor subscriptions" ON doctor_subscriptions
+  FOR SELECT USING (auth.uid() = user_id);
+
+CREATE POLICY "Service role can manage doctor subscriptions" ON doctor_subscriptions
+  FOR ALL USING (auth.jwt() ->> 'role' = 'service_role');
+
+CREATE INDEX IF NOT EXISTS idx_doctor_subscriptions_user_id ON doctor_subscriptions(user_id);
+
+-- Grant doctors a 7-day free trial on registration
+CREATE OR REPLACE FUNCTION create_doctor_trial()
+RETURNS TRIGGER AS $$
+BEGIN
+  INSERT INTO doctor_subscriptions (user_id, registration_paid, trial_ends_at, expires_at, is_active)
+  VALUES (NEW.profile_id, false, NOW() + INTERVAL '7 days', NOW() + INTERVAL '7 days', true);
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+DROP TRIGGER IF EXISTS on_new_doctor_trial ON doctors;
+CREATE TRIGGER on_new_doctor_trial
+  AFTER INSERT ON doctors
+  FOR EACH ROW
+  WHEN (NEW.profile_id IS NOT NULL)
+  EXECUTE FUNCTION create_doctor_trial();
+
 -- Grant new users a 7-day free trial on first subscription check
 CREATE OR REPLACE FUNCTION create_free_trial()
 RETURNS TRIGGER AS $$

@@ -154,6 +154,20 @@ export interface Subscription {
   created_at: string;
 }
 
+export interface DoctorSubscription {
+  id: string;
+  user_id: string;
+  registration_paid: boolean;
+  registration_amount: number;
+  monthly_amount: number;
+  currency: string;
+  trial_ends_at: string | null;
+  expires_at: string | null;
+  is_active: boolean;
+  payment_method: string | null;
+  created_at: string;
+}
+
 export interface LoyaltyPoints {
   id: string;
   user_id: string;

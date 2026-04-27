@@ -106,3 +106,55 @@ export const SUBSCRIPTION_PRICES = {
   premium: { monthly: 3.99, yearly: 39.99 },
   doctor_pro: { monthly: 9.99, yearly: 99.99 },
 };
+
+export const DOCTOR_FEE = {
+  registrationFee: 1000,
+  monthlySubscription: 500,
+  currency: 'RUB',
+  trialDays: 7,
+};
+
+export interface DoctorSubscriptionInfo {
+  isRegistered: boolean;
+  registrationPaid: boolean;
+  monthlyActive: boolean;
+  trialEndsAt: string | null;
+  isTrial: boolean;
+  expiresAt: string | null;
+}
+
+export async function getDoctorSubscription(userId: string): Promise<DoctorSubscriptionInfo> {
+  const { data } = await supabase
+    .from('doctor_subscriptions')
+    .select('*')
+    .eq('user_id', userId)
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .single();
+
+  if (!data) {
+    return {
+      isRegistered: false,
+      registrationPaid: false,
+      monthlyActive: false,
+      trialEndsAt: null,
+      isTrial: false,
+      expiresAt: null,
+    };
+  }
+
+  const now = new Date();
+  const trialEndsAt = data.trial_ends_at ? new Date(data.trial_ends_at) : null;
+  const isTrial = trialEndsAt ? trialEndsAt > now : false;
+  const expiresAt = data.expires_at ? new Date(data.expires_at) : null;
+  const monthlyActive = isTrial || (expiresAt ? expiresAt > now : false);
+
+  return {
+    isRegistered: true,
+    registrationPaid: data.registration_paid,
+    monthlyActive,
+    trialEndsAt: data.trial_ends_at,
+    isTrial,
+    expiresAt: data.expires_at,
+  };
+}

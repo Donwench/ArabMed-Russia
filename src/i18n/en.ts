@@ -118,6 +118,11 @@ export default {
     aboutYou: 'About You',
     submit: 'Submit',
     success: 'Your application has been submitted successfully! It will be reviewed by the admin.',
+    pricingTitle: 'Doctor Listing Fees',
+    registrationFee: 'One-time registration fee',
+    monthlyFee: 'Monthly subscription',
+    freeTrial: '{{days}}-day free trial — no payment required to start',
+    pricingNote: 'Payment will be required after the free trial period ends. Your listing remains active as long as your subscription is current.',
   },
   review: {
     title: 'Write a Review',
@@ -280,6 +285,13 @@ export default {
     currentPlan: 'Current Plan',
     expiresOn: 'Expires on {{date}}',
     trialEnds: 'Trial ends on {{date}}',
+    doctorFee: {
+      title: 'For Doctors',
+      description: 'List your practice on ArabMed Russia and connect with Arabic-speaking patients across the country.',
+      registration: 'One-time registration',
+      monthly: 'Monthly subscription',
+      trial: '{{days}}-day free trial for new doctors',
+    },
   },
   loyalty: {
     title: 'Loyalty Program',
